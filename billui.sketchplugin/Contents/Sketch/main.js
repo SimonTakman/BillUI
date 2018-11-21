@@ -86,19 +86,69 @@ var exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/my-command.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/main.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/my-command.js":
-/*!***************************!*\
-  !*** ./src/my-command.js ***!
-  \***************************/
+/***/ "./src/colorUtil.js":
+/*!**************************!*\
+  !*** ./src/colorUtil.js ***!
+  \**************************/
+/*! exports provided: rgbToHex, hexToRgb */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rgbToHex", function() { return rgbToHex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hexToRgb", function() { return hexToRgb; });
+var rgbToHex = function rgbToHex(r, g, b) {
+  return '#' + [r, g, b].map(function (x) {
+    var hex = x.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }).join('');
+};
+var hexToRgb = function hexToRgb(hex) {
+  return hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, function (m, r, g, b) {
+    return '#' + r + r + g + g + b + b;
+  }).substring(1).match(/.{2}/g).map(function (x) {
+    return parseInt(x, 16);
+  });
+};
+
+/***/ }),
+
+/***/ "./src/main.js":
+/*!*********************!*\
+  !*** ./src/main.js ***!
+  \*********************/
 /*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _colorUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./colorUtil */ "./src/colorUtil.js");
+
+ // documentation: https://developer.sketchapp.com/reference/api/
+//This is our main function that triggers when we start the file
+
+/* harmony default export */ __webpack_exports__["default"] = (function () {
+  var hexNumber = Object(_colorUtil__WEBPACK_IMPORTED_MODULE_1__["rgbToHex"])(122, 32, 11);
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("It's lol " + hexNumber + " 🙌");
+});
+
+/***/ }),
+
+/***/ "sketch":
+/*!*************************!*\
+  !*** external "sketch" ***!
+  \*************************/
+/*! no static exports found */
 /***/ (function(module, exports) {
 
-throw new Error("Module build failed (from ./node_modules/babel-loader/lib/index.js):\nError: ENOENT: no such file or directory, open '/Users/simonlarssontakman/Development/CIU235/BillUI/src/my-command.js'");
+module.exports = require("sketch");
 
 /***/ })
 
@@ -111,4 +161,4 @@ throw new Error("Module build failed (from ./node_modules/babel-loader/lib/index
 }
 that['onRun'] = __skpm_run.bind(this, 'default')
 
-//# sourceMappingURL=my-command.js.map
+//# sourceMappingURL=main.js.map

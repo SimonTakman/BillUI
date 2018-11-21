@@ -4,9 +4,9 @@
   "icon": "icon.png",
   "commands": [
     {
-      "name": "my-command",
+      "name": "Run BillUI",
       "identifier": "my-command-identifier",
-      "script": "my-command.js"
+      "script": "main.js"
     }
   ],
   "menu": {
