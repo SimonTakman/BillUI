@@ -2,10 +2,11 @@ let color = '#65F0FF'
 const mutation = 0.10
 
 //TODO: add export
+//TODO: Added ff for opacity reasons 
 const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {
   const hex = x.toString(16)
   return hex.length === 1 ? '0' + hex : hex
-}).join('')
+}).join('') + 'ff'
 
 //TODO: add export
 const hexToRgb = hex =>

@@ -95,19 +95,24 @@ var exports =
 /*!**************************!*\
   !*** ./src/colorUtil.js ***!
   \**************************/
-/*! exports provided: rgbToHex, hexToRgb */
+/*! exports provided: mutateColor */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rgbToHex", function() { return rgbToHex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hexToRgb", function() { return hexToRgb; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mutateColor", function() { return mutateColor; });
+var color = '#65F0FF';
+var mutation = 0.10; //TODO: add export
+//TODO: Added ff for opacity reasons 
+
 var rgbToHex = function rgbToHex(r, g, b) {
   return '#' + [r, g, b].map(function (x) {
     var hex = x.toString(16);
     return hex.length === 1 ? '0' + hex : hex;
-  }).join('');
-};
+  }).join('') + 'ff';
+}; //TODO: add export
+
+
 var hexToRgb = function hexToRgb(hex) {
   return hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, function (m, r, g, b) {
     return '#' + r + r + g + g + b + b;
@@ -115,6 +120,39 @@ var hexToRgb = function hexToRgb(hex) {
     return parseInt(x, 16);
   });
 };
+
+function mutate(low, high) {
+  var item = Math.floor(Math.random() * (high - low) + low);
+  return item;
+}
+
+function getLowestMutationColors(colorFraction) {
+  var newColorFraction = Math.floor(colorFraction - 255 * mutation);
+
+  if (newColorFraction < 0) {
+    newColorFraction = 0;
+  }
+
+  return newColorFraction;
+}
+
+function getHighestMutationColors(colorFraction) {
+  var newColorFraction = Math.floor(colorFraction + 255 * mutation);
+
+  if (newColorFraction > 255) {
+    newColorFraction = 255;
+  }
+
+  return newColorFraction;
+}
+
+function mutateColor(hexColor) {
+  var temp = hexToRgb(hexColor);
+  var newColorRGB = temp.map(function (x) {
+    return mutate(getLowestMutationColors(x), getHighestMutationColors(x));
+  });
+  return rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2]);
+}
 
 /***/ }),
 
@@ -135,8 +173,15 @@ __webpack_require__.r(__webpack_exports__);
 //This is our main function that triggers when we start the file
 
 /* harmony default export */ __webpack_exports__["default"] = (function () {
-  var hexNumber = Object(_colorUtil__WEBPACK_IMPORTED_MODULE_1__["rgbToHex"])(122, 32, 11);
-  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("It's lol " + hexNumber + " 🙌");
+  //let hexNumber = rgbToHex(122,32,11)
+  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument(); //let page = document.selectedPage
+  //let page = document.selectedPage
+  //let layer = document.selectedLayers
+
+  var shape = document.getLayersNamed("Rectangle")[0];
+  var color = Object(_colorUtil__WEBPACK_IMPORTED_MODULE_1__["mutateColor"])(shape.style.fills[0].color);
+  shape.style.fills[0].color = color;
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("It's lol  🙌");
 });
 
 /***/ }),
