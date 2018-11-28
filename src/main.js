@@ -1,6 +1,12 @@
 import sketch from 'sketch'
 import BrowserWindow from 'sketch-module-web-view'
 import {mutateColor} from './colorUtil'
+import {
+  mutateBorderColor,
+  mutateBorderThickness,
+  mutateShadow
+} from './styleUtil'
+
 // documentation: https://developer.sketchapp.com/reference/api/
 
 function duplicateNewLayers(obj, numberOfLayers){
@@ -10,6 +16,9 @@ function duplicateNewLayers(obj, numberOfLayers){
     tmpObj.name = tmpObj.name + "." + i
     let color = mutateColor(tmpObj.style.fills[0].color)
     tmpObj.style.fills[0].color = color
+    mutateBorderColor(tmpObj)
+    mutateBorderThickness(tmpObj)
+    mutateShadow(tmpObj)
     let tmpNativeObj = tmpObj.sketchObject
     tmpNativeObj.setCornerRadiusFloat(Math.floor(Math.random() * 30))
   }
@@ -32,7 +41,7 @@ export default function() {
     duplicateNewLayers(shape,8)
   }
   //initiateGUI()
-  console.log(sketch.UI)
+  //console.log(sketch.UI)
   sketch.UI.message("It's bow  🙌")
 }
 

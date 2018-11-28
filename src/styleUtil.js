@@ -4,15 +4,15 @@ import {mutateColor} from './colorUtil'
 const enableShadow = "{ blur: 4, x: 0, y: 2, spread: 0, color: '#00000000', enabled: true }"
 
 export function mutateBorderColor(obj){
-  console.log('inside mutateBorderColor')
+  //console.log('inside mutateBorderColor')
   if(obj.style.borders[0] !== undefined){
     let bColor = mutateColor(obj.style.borders[0].color)
     obj.style.borders[0].color = bColor
   }
 }
 
-export function mutateBorderWidth(obj){
-  console.log('inside mutateBorderWidth')
+export function mutateBorderThickness(obj){
+  //console.log('inside mutateBorderThickness')
   if(obj.style.borders[0] !== undefined){
     let thickness = obj.style.borders[0].thickness
     let limit = getSmallestWidth(obj)
@@ -23,8 +23,8 @@ export function mutateBorderWidth(obj){
 
 //TODO: Clear when disable shadow!
 export function mutateShadow(obj){
-  console.log('inside mutateShadow')
-  console.log(obj.style.sketchObject)
+  //console.log('inside mutateShadow')
+  //console.log(obj.style.sketchObject)
   let shape = obj.style.sketchObject
   if(shape.hasEnabledShadow() === 0 || shape.hasEnabledShadow() === undefined) {
     let shouldEnable = mutate(0,100)
@@ -33,13 +33,13 @@ export function mutateShadow(obj){
     }
   }
   else {
-    console.log('FUCKING FILLED')
+    //console.log('FUCKING FILLED')
     let shouldEnable = mutate(0,100)
     if(shouldEnable <= 100 * MUTATION){
-      console.log('Disable Shadow')
+      //console.log('Disable Shadow')
       shape.disableAllShadows()
     }else {
-      console.log('Mutate Shadow')
+      //console.log('Mutate Shadow')
       let shadow = obj.style.shadows[0]
       setShadowColor(shadow)
       setOneUnitRandomness(shadow, 'blur', shadow.blur)
@@ -51,7 +51,7 @@ export function mutateShadow(obj){
 }
 
 function setOneUnitRandomness(obj, type, prop){
-  console.log(prop)
+  //console.log(prop)
   if(mutate(0, 100) <= 100 * MUTATION){
     if(prop === 0) {
       prop = 1
@@ -83,26 +83,15 @@ function setOneUnitRandomness(obj, type, prop){
   }
 }
 
-function setShadowX(obj){
-  console.log(obj)
-}
-
-function setShadowY(obj){
-  console.log(obj)
-}
-
-function setShadowSpread(obj){
-  console.log(obj)
-}
 
 function setShadowColor(s){
   let temp = mutateColor(s.color)
-  console.log(temp)
+  //console.log(temp)
   temp = temp.substring(0, temp.length - 2)
   temp = temp + '80'
-  console.log(temp)
+  //console.log(temp)
   s.color = temp
-  console.log(s.color)
+  //console.log(s.color)
 }
 
 function getSmallestWidth(obj){
