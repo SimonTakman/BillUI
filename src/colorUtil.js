@@ -1,5 +1,7 @@
+import {MUTATION} from './constants'
+
 let color = '#65F0FF'
-const mutation = 0.10
+
 
 //TODO: add export
 //TODO: Added ff for opacity reasons 
@@ -21,7 +23,7 @@ function mutate(low, high){
 }
 
 function getLowestMutationColors(colorFraction){
-  var newColorFraction = Math.floor(colorFraction - 255 * mutation)
+  var newColorFraction = Math.floor(colorFraction - 255 * MUTATION)
   if(newColorFraction < 0){
     newColorFraction = 0
   }
@@ -29,7 +31,7 @@ function getLowestMutationColors(colorFraction){
 }
 
 function getHighestMutationColors(colorFraction){
-  var newColorFraction = Math.floor(colorFraction + 255 * mutation)
+  var newColorFraction = Math.floor(colorFraction + 255 * MUTATION)
   if(newColorFraction > 255){
     newColorFraction = 255
   }

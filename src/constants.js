@@ -1,0 +1,1 @@
+export const MUTATION = 0.10
