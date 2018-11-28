@@ -11,3 +11,7 @@ npm-debug.log
 
 # WebStorm
 .idea
+
+### Our own gitignores ###
+billui.sketchplugin/Contents/Sketch/main.js
+billui.sketchplugin/Contents/Sketch/main.js.map
