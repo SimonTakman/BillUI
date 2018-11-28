@@ -1,4 +1,5 @@
 import sketch from 'sketch'
+import BrowserWindow from 'sketch-module-web-view'
 import {mutateColor} from './colorUtil'
 // documentation: https://developer.sketchapp.com/reference/api/
 
@@ -14,6 +15,14 @@ function duplicateNewLayers(obj, numberOfLayers){
   }
 }
 
+function initiateGUI(){
+  const options = {
+    identifier: 'Bill-UI',
+  }
+  const browserWindow = new BrowserWindow(options)
+  browserWindow.loadURL(require('./main-screen.html'))
+}
+
 //This is our main function that triggers when we start the file
 export default function() {
   let document = sketch.getSelectedDocument()
@@ -22,10 +31,8 @@ export default function() {
     let shape = selectedLayers.layers[0]
     duplicateNewLayers(shape,8)
   }
-  //console.log(selectedLayers.layers)
-  //let shape = document.getLayersNamed("Rectangle")[0]
-  //createEightNewLayers(shape)
-  //console.log(sketchObject)
-  // Move this function to shape
-  sketch.UI.message("It's wow  🙌")
+  //initiateGUI()
+  console.log(sketch.UI)
+  sketch.UI.message("It's bow  🙌")
 }
+
