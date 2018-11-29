@@ -34,6 +34,7 @@ function initiateGUI(){
 
 //This is our main function that triggers when we start the file
 export default function() {
+  /*
   let document = sketch.getSelectedDocument()
   let selectedLayers = document.selectedLayers
   if(!selectedLayers.isEmpty){
@@ -56,8 +57,8 @@ export default function() {
   } else {
     console.log("Whaat")
   }
-  //initiateGUI()
+  */
+  initiateGUI()
   //console.log(sketch.UI)
   sketch.UI.message("It's bow  🙌")
 }
-
