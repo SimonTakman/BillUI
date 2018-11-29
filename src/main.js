@@ -30,7 +30,7 @@ function initiateGUI(){
   const options = {
     identifier: 'Bill-UI',
     alwaysOnTop: true,
-    width: 200,
+    width: 240,
     height: 400,
     backgroundColor: "#F2F2F2",
   }

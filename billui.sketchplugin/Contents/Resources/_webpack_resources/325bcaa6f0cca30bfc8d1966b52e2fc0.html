@@ -7,26 +7,21 @@
     body {
       font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto
     }
+
     hr {
-      opacity: 0.5;
+      opacity: 30%;
     }
-    h2 {
-      margin-top: 10px !important;
-      margin-bottom: 10px !important;
-    }
-    h6 {
-      margin-top: 10px !important;
-      margin-bottom: 12px !important;
+
+    h1 {
+      color: maroon;
+      margin-left: 40px;
     }
     </style>
   </head>
   <body>
     <div>
-      <h2>BillUI</h2>
-      <h6>Plugin for generate design suggestions</h6>
-      <h6 style="margin-top: 20px; margin-bottom: 4px; font-weight: normal;">Select parameters you like to mutate</h6>
       <form>
-        <!-- <hr> -->
+        <hr>
         <input type="checkbox" name="Radious-Round-Corners" value="Radious" checked> Radious (Round Corners)<br>
         <hr>
         <input type="checkbox" name="Fills-Color" value="fills-color" checked> Fills (Color)<br>
@@ -38,10 +33,14 @@
         <input type="checkbox" name="Shadow" value="Shadow" checked> Shadow<br>
         <hr>
       </form>
-      <div style="text-align: center; margin-top: 30px;">
-        <h6 style="font-weight: normal;">Select one shape to mutate</h6>
-        <button type="button" name="mutate">MUTATE</button>
-      </div>
+      <!--
+      <p id="lol" style="background-color: red">Hello Woo!</p>
+      <br>
+      <button id="click_me">Click me</button>
+      <p>Source cose: https://github.com/skpm/sketch-module-web-view</p>
+      <br>
+      <p>Communicating with the webview: https://github.com/skpm/sketch-module-web-view/blob/master/docs/communication-plugin-webview.md</p>
+    -->
     </div>
     <script type="text/javascript">
       function initFunction(){
