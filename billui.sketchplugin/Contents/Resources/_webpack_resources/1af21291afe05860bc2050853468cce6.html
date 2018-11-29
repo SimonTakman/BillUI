@@ -40,44 +40,25 @@
       </form>
       <div style="text-align: center; margin-top: 30px;">
         <h6 style="font-weight: normal;">Select one shape to mutate</h6>
-        <button type="button" id="mutateButton" name="mutate">MUTATE</button>
+        <button type="button" name="mutate">MUTATE</button>
       </div>
     </div>
     <script type="text/javascript">
       function initFunction(){
-        document.getElementById("mutateButton").addEventListener("click", clickFunction);
+        document.getElementById("click_me").addEventListener("click", clickFunction);
       }
 
       function clickFunction(){
-        var selectedItems = {
-          "radious": false,
-          "fillsColor": false,
-          "bordersColor": false,
-          "borderWidth": false,
-          "shadow": false,
-        }
-        
+        var selectedItems = "{"
         var radious = document.getElementById("Radious")
         var fillsColor = document.getElementById("Fills-Color")
         var bordersColor = document.getElementById("Borders-Color")
         var borderWidth = document.getElementById("Border-Width")
         var shadow = document.getElementById("Shadow")
-        if(radious.checked){
-          selectedItems.radious = true
+        if(radious.){
+
         }
-        if(fillsColor.checked){
-          selectedItems.fillsColor = true
-        }
-        if(bordersColor.checked){
-          selectedItems.bordersColor = true
-        }
-        if(borderWidth.checked){
-          selectedItems.borderWidth = true
-        }
-        if(shadow.checked){
-          selectedItems.shadow = true
-        }
-        window.postMessage('webviewMessage', JSON.stringify(selectedItems));
+        window.postMessage('webviewMessage', 'Called from webview');
       }
 
       window.globalFunction = function(args){

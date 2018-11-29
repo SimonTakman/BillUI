@@ -2408,23 +2408,40 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _colorUtil__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./colorUtil */ "./src/colorUtil.js");
 /* harmony import */ var _styleUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./styleUtil */ "./src/styleUtil.js");
+/* harmony import */ var _shapeUtil__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./shapeUtil */ "./src/shapeUtil.js");
 
 
 
- // documentation: https://developer.sketchapp.com/reference/api/
 
-function duplicateNewLayers(obj, numberOfLayers) {
+
+var browserWindow; // documentation: https://developer.sketchapp.com/reference/api/
+
+function duplicateNewLayers(obj, selectedProperties, numberOfLayers) {
   for (var i = 0; i < numberOfLayers; i++) {
     var tmpObj = obj.duplicate();
     tmpObj.frame.y = tmpObj.frame.y + (i + 1) * tmpObj.frame.height * 2;
     tmpObj.name = tmpObj.name + "." + i;
-    var color = Object(_colorUtil__WEBPACK_IMPORTED_MODULE_2__["mutateColor"])(tmpObj.style.fills[0].color);
-    tmpObj.style.fills[0].color = color;
-    Object(_styleUtil__WEBPACK_IMPORTED_MODULE_3__["mutateBorderColor"])(tmpObj);
-    Object(_styleUtil__WEBPACK_IMPORTED_MODULE_3__["mutateBorderThickness"])(tmpObj);
-    Object(_styleUtil__WEBPACK_IMPORTED_MODULE_3__["mutateShadow"])(tmpObj);
-    var tmpNativeObj = tmpObj.sketchObject;
-    tmpNativeObj.setCornerRadiusFloat(Math.floor(Math.random() * 30));
+
+    if (selectedProperties.radious) {
+      Object(_shapeUtil__WEBPACK_IMPORTED_MODULE_4__["mutateCornerRadius"])(tmpObj);
+    }
+
+    if (selectedProperties.fillsColor) {
+      var color = Object(_colorUtil__WEBPACK_IMPORTED_MODULE_2__["mutateColor"])(tmpObj.style.fills[0].color);
+      tmpObj.style.fills[0].color = color;
+    }
+
+    if (selectedProperties.bordersColor) {
+      Object(_styleUtil__WEBPACK_IMPORTED_MODULE_3__["mutateBorderColor"])(tmpObj);
+    }
+
+    if (selectedProperties.borderWidth) {
+      Object(_styleUtil__WEBPACK_IMPORTED_MODULE_3__["mutateBorderThickness"])(tmpObj);
+    }
+
+    if (selectedProperties.shadow) {
+      Object(_styleUtil__WEBPACK_IMPORTED_MODULE_3__["mutateShadow"])(tmpObj);
+    }
   }
 }
 
@@ -2434,48 +2451,116 @@ function initiateGUI() {
   var options = {
     identifier: 'Bill-UI',
     alwaysOnTop: true,
-    width: 200,
+    width: 240,
     height: 400,
     backgroundColor: "#F2F2F2"
   };
-  var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_1___default.a(options);
-  browserWindow.loadURL(__webpack_require__(/*! ./webview/main-screen.html */ "./src/webview/main-screen.html"));
-  browserWindow.webContents.on('webviewMessage', function (s) {
-    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message(s); //In order to update GUI, use the method below
+  browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_1___default.a(options);
+  browserWindow.loadURL(__webpack_require__(/*! ./webview/main-screen.html */ "./src/webview/main-screen.html")); //In order to update GUI, use the method below
+  //browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
+}
 
-    browserWindow.webContents.executeJavaScript('globalFunction("Yolo")');
+function listenToMutationEvents() {
+  browserWindow.webContents.on('webviewMessage', function (s) {
+    console.log(s);
+    var selectedParameters = JSON.parse(s);
+    var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument();
+    var selectedLayers = document.selectedLayers;
+
+    if (!selectedLayers.isEmpty) {
+      var groupedLayer = selectedLayers.layers.filter(function (layer) {
+        return layer.type === 'Group';
+      });
+
+      if (groupedLayer.length > 0) {
+        console.log("Grouped Layer");
+        console.log(groupedLayer);
+        var shape = groupedLayer[0].layers.filter(function (layer) {
+          return layer.type === 'ShapePath';
+        });
+        console.log(shape.length);
+        duplicateNewLayers(shape[0], selectedParameters, 8);
+      } else {
+        console.log("Not a grouped Layer");
+        var _shape = selectedLayers.layers[0];
+
+        if (_shape.type === 'ShapePath') {
+          duplicateNewLayers(_shape, selectedParameters, 8);
+        }
+      } //let shape = selectedLayers.layers[0]
+      //duplicateNewLayers(shape,8)
+
+    } else {
+      console.log("Whaat");
+    }
   });
 } //This is our main function that triggers when we start the file
 
 
 /* harmony default export */ __webpack_exports__["default"] = (function () {
-  /*
-  let document = sketch.getSelectedDocument()
-  let selectedLayers = document.selectedLayers
-  if(!selectedLayers.isEmpty){
-    let groupedLayer = selectedLayers.layers.filter(layer => layer.type === 'Group')
-    if(groupedLayer.length > 0){
-      console.log("Grouped Layer")
-      console.log(groupedLayer)
-      let shape = groupedLayer[0].layers.filter(layer => layer.type === 'ShapePath')
-      console.log(shape.length)
-      duplicateNewLayers(shape[0], 8)
-    } else {
-      console.log("Not a grouped Layer")
-      let shape = selectedLayers.layers[0]
-      if (shape.type === 'ShapePath'){
-        duplicateNewLayers(shape, 8)
-      }
-    }
-    //let shape = selectedLayers.layers[0]
-    //duplicateNewLayers(shape,8)
-  } else {
-    console.log("Whaat")
-  }
-  */
-  initiateGUI(); //console.log(sketch.UI)
-  //sketch.UI.message("It's bow  🙌")
+  initiateGUI();
+  listenToMutationEvents();
 });
+
+/***/ }),
+
+/***/ "./src/mutationUtil.js":
+/*!*****************************!*\
+  !*** ./src/mutationUtil.js ***!
+  \*****************************/
+/*! exports provided: getLowestMutation, getHighestMutation, mutate */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLowestMutation", function() { return getLowestMutation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getHighestMutation", function() { return getHighestMutation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mutate", function() { return mutate; });
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./src/constants.js");
+
+function getLowestMutation(currentIndex, limit) {
+  var fraction = Math.floor(currentIndex - limit * _constants__WEBPACK_IMPORTED_MODULE_0__["MUTATION"]);
+
+  if (fraction < 0) {
+    fraction = 0;
+  }
+
+  return fraction;
+}
+function getHighestMutation(currentIndex, limit) {
+  var fraction = Math.floor(currentIndex + limit * _constants__WEBPACK_IMPORTED_MODULE_0__["MUTATION"]);
+
+  if (fraction > limit) {
+    fraction = limit;
+  }
+
+  return fraction;
+}
+function mutate(low, high) {
+  var item = Math.floor(Math.random() * (high - low) + low);
+  return item;
+}
+
+/***/ }),
+
+/***/ "./src/shapeUtil.js":
+/*!**************************!*\
+  !*** ./src/shapeUtil.js ***!
+  \**************************/
+/*! exports provided: mutateCornerRadius */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mutateCornerRadius", function() { return mutateCornerRadius; });
+/* harmony import */ var _mutationUtil__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./mutationUtil */ "./src/mutationUtil.js");
+
+function mutateCornerRadius(obj) {
+  var sObj = obj.sketchObject;
+  var low = Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_0__["getLowestMutation"])(sObj.cornerRadiusFloat(), sObj.maximumAllowedRadius());
+  var high = Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_0__["getHighestMutation"])(sObj.cornerRadiusFloat(), sObj.maximumAllowedRadius());
+  sObj.setCornerRadiusFloat(Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_0__["mutate"])(low, high));
+}
 
 /***/ }),
 
@@ -2633,7 +2718,7 @@ function mutate(low, high) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + context.plugin.urlForResourceNamed("_webpack_resources/042a10796e89a870c09d82ddc577563b.html").path();
+module.exports = "file://" + context.plugin.urlForResourceNamed("_webpack_resources/7cb9e7d8a4fc1f2f86a19ecf9d62fe69.html").path();
 
 /***/ }),
 

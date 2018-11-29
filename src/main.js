@@ -6,21 +6,32 @@ import {
   mutateBorderThickness,
   mutateShadow
 } from './styleUtil'
+import {mutateCornerRadius} from './shapeUtil'
 
+let browserWindow;
 // documentation: https://developer.sketchapp.com/reference/api/
 
-function duplicateNewLayers(obj, numberOfLayers){
+function duplicateNewLayers(obj, selectedProperties, numberOfLayers){
   for(let i = 0; i < numberOfLayers; i++){
     let tmpObj = obj.duplicate()
     tmpObj.frame.y = tmpObj.frame.y + (i+1)*tmpObj.frame.height*2
     tmpObj.name = tmpObj.name + "." + i
-    let color = mutateColor(tmpObj.style.fills[0].color)
-    tmpObj.style.fills[0].color = color
-    mutateBorderColor(tmpObj)
-    mutateBorderThickness(tmpObj)
-    mutateShadow(tmpObj)
-    let tmpNativeObj = tmpObj.sketchObject
-    tmpNativeObj.setCornerRadiusFloat(Math.floor(Math.random() * 30))
+    if(selectedProperties.radious){
+      mutateCornerRadius(tmpObj)
+    }
+    if(selectedProperties.fillsColor){
+      let color = mutateColor(tmpObj.style.fills[0].color)
+      tmpObj.style.fills[0].color = color
+    }
+    if(selectedProperties.bordersColor){
+      mutateBorderColor(tmpObj)
+    }
+    if(selectedProperties.borderWidth){
+      mutateBorderThickness(tmpObj)
+    }
+    if(selectedProperties.shadow){
+      mutateShadow(tmpObj)
+    }
   }
 }
 
@@ -34,21 +45,19 @@ function initiateGUI(){
     height: 400,
     backgroundColor: "#F2F2F2",
   }
-  const browserWindow = new BrowserWindow(options)
+  browserWindow = new BrowserWindow(options)
   browserWindow.loadURL(require('./webview/main-screen.html'))
-  browserWindow.webContents.on('webviewMessage', function(s){
-    sketch.UI.message(s)
-    //In order to update GUI, use the method below
-    browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
-  })
-
+  
+  //In order to update GUI, use the method below
+  //browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
 }
 
-//This is our main function that triggers when we start the file
-export default function() {
-  /*
-  let document = sketch.getSelectedDocument()
-  let selectedLayers = document.selectedLayers
+function listenToMutationEvents(){
+  browserWindow.webContents.on('webviewMessage', function(s){
+    console.log(s)
+    let selectedParameters = JSON.parse(s)
+    let document = sketch.getSelectedDocument()
+    let selectedLayers = document.selectedLayers
   if(!selectedLayers.isEmpty){
     let groupedLayer = selectedLayers.layers.filter(layer => layer.type === 'Group')
     if(groupedLayer.length > 0){
@@ -56,12 +65,12 @@ export default function() {
       console.log(groupedLayer)
       let shape = groupedLayer[0].layers.filter(layer => layer.type === 'ShapePath')
       console.log(shape.length)
-      duplicateNewLayers(shape[0], 8)
+      duplicateNewLayers(shape[0],selectedParameters, 8)
     } else {
       console.log("Not a grouped Layer")
       let shape = selectedLayers.layers[0]
       if (shape.type === 'ShapePath'){
-        duplicateNewLayers(shape, 8)
+        duplicateNewLayers(shape,selectedParameters, 8)
       }
     }
     //let shape = selectedLayers.layers[0]
@@ -69,8 +78,11 @@ export default function() {
   } else {
     console.log("Whaat")
   }
-  */
+  })
+}
+
+//This is our main function that triggers when we start the file
+export default function() {
   initiateGUI()
-  //console.log(sketch.UI)
-  //sketch.UI.message("It's bow  🙌")
+  listenToMutationEvents()
 }
