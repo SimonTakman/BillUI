@@ -37,8 +37,24 @@ export default function() {
   let document = sketch.getSelectedDocument()
   let selectedLayers = document.selectedLayers
   if(!selectedLayers.isEmpty){
-    let shape = selectedLayers.layers[0]
-    duplicateNewLayers(shape,8)
+    let groupedLayer = selectedLayers.layers.filter(layer => layer.type === 'Group')
+    if(groupedLayer.length > 0){
+      console.log("Grouped Layer")
+      console.log(groupedLayer)
+      let shape = groupedLayer[0].layers.filter(layer => layer.type === 'ShapePath')
+      console.log(shape.length)
+      duplicateNewLayers(shape[0], 8)
+    } else {
+      console.log("Not a grouped Layer")
+      let shape = selectedLayers.layers[0]
+      if (shape.type === 'ShapePath'){
+        duplicateNewLayers(shape, 8)
+      }
+    }
+    //let shape = selectedLayers.layers[0]
+    //duplicateNewLayers(shape,8)
+  } else {
+    console.log("Whaat")
   }
   //initiateGUI()
   //console.log(sketch.UI)
