@@ -1,4 +1,8 @@
-.BillUI {
+.bg-style {
+  background-color: #0066FF;
+}
+
+.billUI {
   width: 76px;
   height: 33px;
   font-family: Roboto;
@@ -11,7 +15,7 @@
   color: #000000;
 }
 
-.Plugin-for-generate {
+.plugin-for-generate {
   width: 271px;
   height: 20px;
   font-family: Roboto;
@@ -24,13 +28,13 @@
   color: #000000;
 }
 
-.Path {
+.path {
   width: 652px;
   height: 2px;
   background-color: #d8d8d8;
 }
 
-.Radious-Round-Corne {
+.radious-Round-Corne {
   width: 245px;
   height: 25px;
   font-family: Roboto;
@@ -43,7 +47,7 @@
   color: #000000;
 }
 
-.Fills-Color {
+.fills-Color {
   width: 113px;
   height: 25px;
   font-family: Roboto;
@@ -56,7 +60,7 @@
   color: #000000;
 }
 
-.Borders-Color {
+.borders-Color {
   width: 150px;
   height: 25px;
   font-family: Roboto;
@@ -69,7 +73,7 @@
   color: #000000;
 }
 
-.Border-Width {
+.border-Width {
   width: 143px;
   height: 25px;
   font-family: Roboto;
@@ -95,7 +99,7 @@
   color: #000000;
 }
 
-.Select-one-shape-to {
+.select-one-shape-to {
   width: 219px;
   height: 21px;
   font-family: Roboto;
@@ -108,7 +112,7 @@
   color: #515050;
 }
 
-.MutateBtn {
+.mutateBtn {
   width: 197px;
   height: 40px;
   border-radius: 2px;
@@ -116,7 +120,7 @@
   background-color: #ffffff;
 }
 
-.MUTATE {
+.mutate {
   width: 71px;
   height: 21px;
   font-family: Roboto;
@@ -129,7 +133,7 @@
   color: #515050;
 }
 
-.SelectBtn {
+.selectBtn {
   width: 32px;
   height: 32px;
   border-radius: 2px;

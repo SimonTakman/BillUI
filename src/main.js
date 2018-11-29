@@ -29,7 +29,7 @@ function initiateGUI(){
     identifier: 'Bill-UI',
   }
   const browserWindow = new BrowserWindow(options)
-  browserWindow.loadURL(require('./main-screen.html'))
+  browserWindow.loadURL(require('./webview/main-screen.html'))
 }
 
 //This is our main function that triggers when we start the file
