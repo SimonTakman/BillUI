@@ -25,14 +25,23 @@ function duplicateNewLayers(obj, numberOfLayers){
 }
 
 function initiateGUI(){
+  //https://github.com/skpm/sketch-module-web-view/blob/master/docs/browser-window.md
+  // Class Browserwindow
   const options = {
     identifier: 'Bill-UI',
+    alwaysOnTop: true,
+    width: 200,
+    height: 400,
+    backgroundColor: "#F2F2F2",
   }
   const browserWindow = new BrowserWindow(options)
   browserWindow.loadURL(require('./webview/main-screen.html'))
   browserWindow.webContents.on('webviewMessage', function(s){
     sketch.UI.message(s)
+    //In order to update GUI, use the method below
+    browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
   })
+
 }
 
 //This is our main function that triggers when we start the file

@@ -2429,13 +2429,21 @@ function duplicateNewLayers(obj, numberOfLayers) {
 }
 
 function initiateGUI() {
+  //https://github.com/skpm/sketch-module-web-view/blob/master/docs/browser-window.md
+  // Class Browserwindow
   var options = {
-    identifier: 'Bill-UI'
+    identifier: 'Bill-UI',
+    alwaysOnTop: true,
+    width: 200,
+    height: 400,
+    backgroundColor: "#F2F2F2"
   };
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_1___default.a(options);
   browserWindow.loadURL(__webpack_require__(/*! ./webview/main-screen.html */ "./src/webview/main-screen.html"));
   browserWindow.webContents.on('webviewMessage', function (s) {
-    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message(s);
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message(s); //In order to update GUI, use the method below
+
+    browserWindow.webContents.executeJavaScript('globalFunction("Yolo")');
   });
 } //This is our main function that triggers when we start the file
 
@@ -2625,7 +2633,7 @@ function mutate(low, high) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + context.plugin.urlForResourceNamed("_webpack_resources/1b4a38f2661e2ed6aa6f15bbf2919b51.html").path();
+module.exports = "file://" + context.plugin.urlForResourceNamed("_webpack_resources/042a10796e89a870c09d82ddc577563b.html").path();
 
 /***/ }),
 
