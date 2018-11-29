@@ -14,16 +14,6 @@
       <br>
       <p>Communicating with the webview: https://github.com/skpm/sketch-module-web-view/blob/master/docs/communication-plugin-webview.md</p>
     </div>
-    <script type="text/javascript">
-      function initFunction(){
-        document.getElementById("click_me").addEventListener("click", clickFunction);
-      }
-
-      function clickFunction(){
-        document.getElementById("lol").innerHTML = "Hey Loooser!";
-        window.postMessage('webviewMessage', 'Called from webview');
-      }
-      window.onload = initFunction;
-    </script>
+    <script src="../webview.js" type="text/javascript"></script>
   </body>
 </html>

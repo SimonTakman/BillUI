@@ -1,5 +1,11 @@
-function fireWhenReady(){
-  alert("lolo");
+document.getElementById("click_me").addEventListener("click", func1);
+
+function p(event){
+  
 }
 
-$(document).ready(fireWhenReady);
+window.onload=func1;
+
+function func1(){
+  document.getElementById("lol").innerHTML = "Hey!";
+}

@@ -16,12 +16,12 @@
     </div>
     <script type="text/javascript">
       function initFunction(){
-        document.getElementById("click_me").addEventListener("click", clickFunction);
+        document.getElementById("click_me").addEventListener("click", clickFunction)
       }
 
       function clickFunction(){
         document.getElementById("lol").innerHTML = "Hey Loooser!";
-        window.postMessage('webviewMessage', 'Called from webview');
+        window.postMessage('')
       }
       window.onload = initFunction;
     </script>

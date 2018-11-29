@@ -15,15 +15,10 @@
       <p>Communicating with the webview: https://github.com/skpm/sketch-module-web-view/blob/master/docs/communication-plugin-webview.md</p>
     </div>
     <script type="text/javascript">
-      function initFunction(){
-        document.getElementById("click_me").addEventListener("click", clickFunction);
+      function test(){
+        document.getElementById("lol").innerHTML = "Hey!";
       }
-
-      function clickFunction(){
-        document.getElementById("lol").innerHTML = "Hey Loooser!";
-        window.postMessage('webviewMessage', 'Called from webview');
-      }
-      window.onload = initFunction;
+      window.onload = test;
     </script>
   </body>
 </html>

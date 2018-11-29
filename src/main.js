@@ -30,6 +30,9 @@ function initiateGUI(){
   }
   const browserWindow = new BrowserWindow(options)
   browserWindow.loadURL(require('./webview/main-screen.html'))
+  browserWindow.webContents.on('webviewMessage', function(s){
+    sketch.UI.message(s)
+  })
 }
 
 //This is our main function that triggers when we start the file
@@ -60,5 +63,5 @@ export default function() {
   */
   initiateGUI()
   //console.log(sketch.UI)
-  sketch.UI.message("It's bow  🙌")
+  //sketch.UI.message("It's bow  🙌")
 }
