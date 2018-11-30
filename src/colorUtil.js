@@ -1,10 +1,13 @@
 import {MUTATION} from './constants'
+import {getLowestMutation, getHighestMutation, mutate} from './mutationUtil'
+
+//getLowestMutation(currentIndex, limit)
 
 let color = '#65F0FF'
 
 
 //TODO: add export
-//TODO: Added ff for opacity reasons 
+//TODO: Added ff for opacity reasons
 const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {
   const hex = x.toString(16)
   return hex.length === 1 ? '0' + hex : hex
@@ -17,29 +20,16 @@ const hexToRgb = hex =>
     .substring(1).match(/.{2}/g)
     .map(x => parseInt(x, 16))
 
-function mutate(low, high){
-  var item = Math.floor(Math.random()*(high - low) + low)
-  return item
+export function mutateColor(obj) {
+  let temp = hexToRgb(obj.color)
+  let newColorRGB = temp.map(x => mutate(getLowestMutation(x, 255), getHighestMutation(x, 255)))
+  let hex = rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2])
+  obj.color = hex
 }
 
-function getLowestMutationColors(colorFraction){
-  var newColorFraction = Math.floor(colorFraction - 255 * MUTATION)
-  if(newColorFraction < 0){
-    newColorFraction = 0
-  }
-  return newColorFraction
-}
-
-function getHighestMutationColors(colorFraction){
-  var newColorFraction = Math.floor(colorFraction + 255 * MUTATION)
-  if(newColorFraction > 255){
-    newColorFraction = 255
-  }
-  return newColorFraction
-}
-
-export function mutateColor(hexColor) {
-  let temp = hexToRgb(hexColor)
-  let newColorRGB = temp.map(x => mutate(getLowestMutationColors(x), getHighestMutationColors(x)))
+export function mutateShadowColor(shadow) {
+  let temp = hexToRgb(shadow.color)
+  let newColorRGB = temp.map(x => mutate(getLowestMutation(x, 255), getHighestMutation(x, 255)))
   return rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2])
+
 }

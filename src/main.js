@@ -20,11 +20,10 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers){
       mutateCornerRadius(tmpObj)
     }
     if(selectedProperties.fillsColor){
-      let color = mutateColor(tmpObj.style.fills[0].color)
-      tmpObj.style.fills[0].color = color
+      mutateColor(tmpObj.style.fills[0])
     }
     if(selectedProperties.bordersColor){
-      mutateBorderColor(tmpObj)
+      mutateBorderColor(tmpObj.style.borders[0])
     }
     if(selectedProperties.borderWidth){
       mutateBorderThickness(tmpObj)
@@ -47,7 +46,7 @@ function initiateGUI(){
   }
   browserWindow = new BrowserWindow(options)
   browserWindow.loadURL(require('./webview/main-screen.html'))
-  
+
   //In order to update GUI, use the method below
   //browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
 }

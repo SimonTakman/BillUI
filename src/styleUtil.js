@@ -1,13 +1,13 @@
 import {MUTATION} from './constants'
-import {mutateColor} from './colorUtil'
+import {mutateColor, mutateShadowColor} from './colorUtil'
+import {getLowestMutation, getHighestMutation, mutate} from './mutationUtil'
 
 const enableShadow = "{ blur: 4, x: 0, y: 2, spread: 0, color: '#00000000', enabled: true }"
 
 export function mutateBorderColor(obj){
   //console.log('inside mutateBorderColor')
-  if(obj.style.borders[0] !== undefined){
-    let bColor = mutateColor(obj.style.borders[0].color)
-    obj.style.borders[0].color = bColor
+  if(obj !== undefined){
+    mutateColor(obj)
   }
 }
 
@@ -16,7 +16,7 @@ export function mutateBorderThickness(obj){
   if(obj.style.borders[0] !== undefined){
     let thickness = obj.style.borders[0].thickness
     let limit = getSmallestWidth(obj)
-    let newBorderWidth = mutate(getLowestMutationBorderWidth(thickness, limit), getHighestMutationBorderWidth(thickness, limit))
+    let newBorderWidth = mutate(getLowestMutation(thickness, limit), getHighestMutation(thickness, limit))
     obj.style.borders[0].thickness = newBorderWidth
   }
 }
@@ -85,7 +85,7 @@ function setOneUnitRandomness(obj, type, prop){
 
 
 function setShadowColor(s){
-  let temp = mutateColor(s.color)
+  let temp = mutateShadowColor(s)
   //console.log(temp)
   temp = temp.substring(0, temp.length - 2)
   temp = temp + '80'
@@ -100,25 +100,4 @@ function getSmallestWidth(obj){
   }else {
     return Math.floor(obj.frame.height / 2)
   }
-}
-
-function getLowestMutationBorderWidth(borderWidthFraction, limit){
-  var fraction = Math.floor(borderWidthFraction - limit * MUTATION)
-  if(fraction < 0){
-    fraction = 0
-  }
-  return fraction
-}
-
-function getHighestMutationBorderWidth(borderWidthFraction, limit){
-  var fraction = Math.floor(borderWidthFraction + limit * MUTATION)
-  if(fraction > limit){
-    fraction = limit
-  }
-  return fraction
-}
-
-function mutate(low, high){
-  var item = Math.floor(Math.random()*(high - low) + low)
-  return item
 }
