@@ -8,6 +8,8 @@ import {
 } from './styleUtil'
 import {mutateCornerRadius} from './shapeUtil'
 
+const amountCopies = 3
+
 let browserWindow;
 // documentation: https://developer.sketchapp.com/reference/api/
 
@@ -64,12 +66,12 @@ function listenToMutationEvents(){
       console.log(groupedLayer)
       let shape = groupedLayer[0].layers.filter(layer => layer.type === 'ShapePath')
       console.log(shape.length)
-      duplicateNewLayers(shape[0],selectedParameters, 8)
+      duplicateNewLayers(shape[0],selectedParameters, amountCopies)
     } else {
       console.log("Not a grouped Layer")
       let shape = selectedLayers.layers[0]
       if (shape.type === 'ShapePath'){
-        duplicateNewLayers(shape,selectedParameters, 8)
+        duplicateNewLayers(shape,selectedParameters, amountCopies)
       }
     }
     //let shape = selectedLayers.layers[0]

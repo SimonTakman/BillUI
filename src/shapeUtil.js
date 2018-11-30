@@ -1,8 +1,10 @@
-import {getLowestMutation, getHighestMutation, mutate} from './mutationUtil'
+import {mutate} from './mutationUtil'
+//mutate(curValue, mutationRate, limit, prob)
+
+const cornerRadiusProb = 0.9
+const cornerRadiusRate = 1
 
 export function mutateCornerRadius(obj) {
   let sObj = obj.sketchObject
-  let low = getLowestMutation(sObj.cornerRadiusFloat(), sObj.maximumAllowedRadius())
-  let high = getHighestMutation(sObj.cornerRadiusFloat(), sObj.maximumAllowedRadius())
-  sObj.setCornerRadiusFloat(mutate(low, high))
+  sObj.setCornerRadiusFloat(mutate(sObj.cornerRadiusFloat(), cornerRadiusRate, sObj.maximumAllowedRadius(), cornerRadiusProb))
 }

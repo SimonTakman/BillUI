@@ -1,10 +1,16 @@
 import {MUTATION} from './constants'
-import {getLowestMutation, getHighestMutation, mutate} from './mutationUtil'
+import {mutate, coinToss} from './mutationUtil'
+//mutate(curValue, mutationRate, limit, prob)
 
-//getLowestMutation(currentIndex, limit)
+const fillColorProb = 0.95
+const borderColorProb = 0.9
+const shadowColorProb = 0.7
 
-let color = '#65F0FF'
+const fillColorRate = 0.1
+const borderColorRate = 0.3
+const shadowColorRate = 0.2
 
+const colorLimit = 255
 
 //TODO: add export
 //TODO: Added ff for opacity reasons
@@ -21,15 +27,18 @@ const hexToRgb = hex =>
     .map(x => parseInt(x, 16))
 
 export function mutateColor(obj) {
-  let temp = hexToRgb(obj.color)
-  let newColorRGB = temp.map(x => mutate(getLowestMutation(x, 255), getHighestMutation(x, 255)))
-  let hex = rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2])
-  obj.color = hex
+  if(coinToss(fillColorProb)){
+    let temp = hexToRgb(obj.color)
+    let newColorRGB = temp.map(x => mutate(x, fillColorRate, colorLimit, 1))
+    let hex = rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2])
+    obj.color = hex
+  }
 }
 
 export function mutateShadowColor(shadow) {
-  let temp = hexToRgb(shadow.color)
-  let newColorRGB = temp.map(x => mutate(getLowestMutation(x, 255), getHighestMutation(x, 255)))
-  return rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2])
-
+  if(coinToss(shadowColorProb)){
+    let temp = hexToRgb(shadow.color)
+    let newColorRGB = temp.map(x => mutate(x, shadowColorRate, colorLimit, 1))
+    return rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2])
+  }
 }
