@@ -1,10 +1,19 @@
 import {MUTATION} from './constants'
+import {mutate, coinToss} from './mutationUtil'
+//mutate(curValue, mutationRate, limit, prob)
 
-let color = '#65F0FF'
+const fillColorProb = 0.95
+const borderColorProb = 0.9
+const shadowColorProb = 0.7
 
+const fillColorRate = 0.1
+const borderColorRate = 0.3
+const shadowColorRate = 0.2
+
+const colorLimit = 255
 
 //TODO: add export
-//TODO: Added ff for opacity reasons 
+//TODO: Added ff for opacity reasons
 const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {
   const hex = x.toString(16)
   return hex.length === 1 ? '0' + hex : hex
@@ -17,29 +26,19 @@ const hexToRgb = hex =>
     .substring(1).match(/.{2}/g)
     .map(x => parseInt(x, 16))
 
-function mutate(low, high){
-  var item = Math.floor(Math.random()*(high - low) + low)
-  return item
-}
-
-function getLowestMutationColors(colorFraction){
-  var newColorFraction = Math.floor(colorFraction - 255 * MUTATION)
-  if(newColorFraction < 0){
-    newColorFraction = 0
+export function mutateColor(obj) {
+  if(coinToss(fillColorProb)){
+    let temp = hexToRgb(obj.color)
+    let newColorRGB = temp.map(x => mutate(x, fillColorRate, colorLimit, 1))
+    let hex = rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2])
+    obj.color = hex
   }
-  return newColorFraction
 }
 
-function getHighestMutationColors(colorFraction){
-  var newColorFraction = Math.floor(colorFraction + 255 * MUTATION)
-  if(newColorFraction > 255){
-    newColorFraction = 255
+export function mutateShadowColor(shadow) {
+  if(coinToss(shadowColorProb)){
+    let temp = hexToRgb(shadow.color)
+    let newColorRGB = temp.map(x => mutate(x, shadowColorRate, colorLimit, 1))
+    return rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2])
   }
-  return newColorFraction
-}
-
-export function mutateColor(hexColor) {
-  let temp = hexToRgb(hexColor)
-  let newColorRGB = temp.map(x => mutate(getLowestMutationColors(x), getHighestMutationColors(x)))
-  return rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2])
 }

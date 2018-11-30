@@ -8,6 +8,7 @@ import {
 } from './styleUtil'
 import {mutateCornerRadius} from './shapeUtil'
 
+const amountCopies = 3
 
 let browserWindow;
 // documentation: https://developer.sketchapp.com/reference/api/
@@ -21,11 +22,10 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers){
       mutateCornerRadius(tmpObj)
     }
     if(selectedProperties.fillsColor){
-      let color = mutateColor(tmpObj.style.fills[0].color)
-      tmpObj.style.fills[0].color = color
+      mutateColor(tmpObj.style.fills[0])
     }
     if(selectedProperties.bordersColor){
-      mutateBorderColor(tmpObj)
+      mutateBorderColor(tmpObj.style.borders[0])
     }
     if(selectedProperties.borderWidth){
       mutateBorderThickness(tmpObj)
@@ -59,7 +59,7 @@ function initiateGUI(){
   }
   browserWindow = new BrowserWindow(options)
   browserWindow.loadURL(require('./webview/main-screen.html'))
-  
+
   //In order to update GUI, use the method below
   //browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
 }
@@ -73,9 +73,6 @@ function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard){
 
 function listenToMutationEvents(){
   
-}
-
-function playAroundWithArtboards(){
   browserWindow.webContents.on('webviewMessage', function(s){
     let selectedParameters = JSON.parse(s)
     let document = sketch.getSelectedDocument()
@@ -91,14 +88,18 @@ function playAroundWithArtboards(){
       console.log(groupedLayer)
       let shape = groupedLayer[0].layers.filter(layer => layer.type === 'ShapePath')
       console.log(shape.length)
-      duplicateNewLayers(shape[0],selectedParameters, 8)
+      duplicateNewLayers(shape[0],selectedParameters, amountCopies)
     } else {
       console.log("Not a grouped Layer")
       let shape = selectedLayers.layers[0]
       if (shape.type === 'ShapePath'){
+        //TODO: Below is a WIP for moving it to a new artboard
+        /*
         let parentArtboard = createNewArtboard()
         let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(shape,parentArtboard)
-        //duplicateNewLayers(originalShapeInNewArtboard,selectedParameters, 8)
+        */
+        //TODO: Change duplicate new layers to originalShapeInNewArtboard.
+        duplicateNewLayers(shape,selectedParameters, amountCopies)
       }
     }
     //let shape = selectedLayers.layers[0]
@@ -112,6 +113,5 @@ function playAroundWithArtboards(){
 //This is our main function that triggers when we start the file
 export default function() {
   initiateGUI()
-  //listenToMutationEvents()
-  //playAroundWithArtboards()
+  listenToMutationEvents()
 }

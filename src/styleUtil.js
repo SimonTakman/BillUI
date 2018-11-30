@@ -1,13 +1,17 @@
 import {MUTATION} from './constants'
-import {mutateColor} from './colorUtil'
+import {mutateColor, mutateShadowColor} from './colorUtil'
+import {mutate, coinToss} from './mutationUtil'
+//mutate(curValue, mutationRate, limit, prob)
 
-const enableShadow = "{ blur: 4, x: 0, y: 2, spread: 0, color: '#00000000', enabled: true }"
+const borderThicknessRate = 0.5
+const borderThicknessProb = 0.7
+
+const shadowRate = 0.2
 
 export function mutateBorderColor(obj){
   //console.log('inside mutateBorderColor')
-  if(obj.style.borders[0] !== undefined){
-    let bColor = mutateColor(obj.style.borders[0].color)
-    obj.style.borders[0].color = bColor
+  if(obj !== undefined){
+    mutateColor(obj)
   }
 }
 
@@ -16,7 +20,7 @@ export function mutateBorderThickness(obj){
   if(obj.style.borders[0] !== undefined){
     let thickness = obj.style.borders[0].thickness
     let limit = getSmallestWidth(obj)
-    let newBorderWidth = mutate(getLowestMutationBorderWidth(thickness, limit), getHighestMutationBorderWidth(thickness, limit))
+    let newBorderWidth = mutate(thickness, borderThicknessRate, limit, borderThicknessProb)
     obj.style.borders[0].thickness = newBorderWidth
   }
 }
@@ -27,15 +31,13 @@ export function mutateShadow(obj){
   //console.log(obj.style.sketchObject)
   let shape = obj.style.sketchObject
   if(shape.hasEnabledShadow() === 0 || shape.hasEnabledShadow() === undefined) {
-    let shouldEnable = mutate(0,100)
-    if(shouldEnable <= 50){
+    if(coinToss(0.5)){
       shape.addStylePartOfType(2)
     }
   }
   else {
     //console.log('FUCKING FILLED')
-    let shouldEnable = mutate(0,100)
-    if(shouldEnable <= 100 * MUTATION){
+    if(coinToss(shadowRate)){
       //console.log('Disable Shadow')
       shape.disableAllShadows()
     }else {
@@ -52,12 +54,11 @@ export function mutateShadow(obj){
 
 function setOneUnitRandomness(obj, type, prop){
   //console.log(prop)
-  if(mutate(0, 100) <= 100 * MUTATION){
+  if(coinToss(shadowRate)){
     if(prop === 0) {
       prop = 1
     } else {
-      let dice = mutate(0, 100)
-      if(dice <= 50) {
+      if(coinToss(0.5)) {
         prop = prop - 1
       }else {
         prop = prop + 1
@@ -85,7 +86,7 @@ function setOneUnitRandomness(obj, type, prop){
 
 
 function setShadowColor(s){
-  let temp = mutateColor(s.color)
+  let temp = mutateShadowColor(s)
   //console.log(temp)
   temp = temp.substring(0, temp.length - 2)
   temp = temp + '80'
@@ -100,25 +101,4 @@ function getSmallestWidth(obj){
   }else {
     return Math.floor(obj.frame.height / 2)
   }
-}
-
-function getLowestMutationBorderWidth(borderWidthFraction, limit){
-  var fraction = Math.floor(borderWidthFraction - limit * MUTATION)
-  if(fraction < 0){
-    fraction = 0
-  }
-  return fraction
-}
-
-function getHighestMutationBorderWidth(borderWidthFraction, limit){
-  var fraction = Math.floor(borderWidthFraction + limit * MUTATION)
-  if(fraction > limit){
-    fraction = limit
-  }
-  return fraction
-}
-
-function mutate(low, high){
-  var item = Math.floor(Math.random()*(high - low) + low)
-  return item
 }
