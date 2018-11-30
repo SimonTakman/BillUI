@@ -8,6 +8,7 @@ import {
 } from './styleUtil'
 import {mutateCornerRadius} from './shapeUtil'
 
+
 let browserWindow;
 // documentation: https://developer.sketchapp.com/reference/api/
 
@@ -35,6 +36,17 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers){
   }
 }
 
+//https://github.com/delighted/sketch-duplicate-to-new-artboard/blob/master/src/sketch-duplicate-to-new-artboard.js
+
+function createNewArtboard(){
+  let newArtboard = new sketch.Artboard({
+    name: "newArtboard",
+    parent: sketch.getSelectedDocument().selectedPage
+  })
+  return newArtboard
+}
+
+
 function initiateGUI(){
   //https://github.com/skpm/sketch-module-web-view/blob/master/docs/browser-window.md
   // Class Browserwindow
@@ -52,13 +64,27 @@ function initiateGUI(){
   //browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
 }
 
+function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard){
+  let tmpShape = originalShape.duplicate()
+  tmpShape.parent = parentArtboard
+  //TODO: Move to corrext origin etc.
+  return tmpShape
+}
+
 function listenToMutationEvents(){
+  
+}
+
+function playAroundWithArtboards(){
   browserWindow.webContents.on('webviewMessage', function(s){
-    console.log(s)
     let selectedParameters = JSON.parse(s)
     let document = sketch.getSelectedDocument()
+    console.log(document)
     let selectedLayers = document.selectedLayers
+    
+    
   if(!selectedLayers.isEmpty){
+    
     let groupedLayer = selectedLayers.layers.filter(layer => layer.type === 'Group')
     if(groupedLayer.length > 0){
       console.log("Grouped Layer")
@@ -70,13 +96,15 @@ function listenToMutationEvents(){
       console.log("Not a grouped Layer")
       let shape = selectedLayers.layers[0]
       if (shape.type === 'ShapePath'){
-        duplicateNewLayers(shape,selectedParameters, 8)
+        let parentArtboard = createNewArtboard()
+        let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(shape,parentArtboard)
+        //duplicateNewLayers(originalShapeInNewArtboard,selectedParameters, 8)
       }
     }
     //let shape = selectedLayers.layers[0]
     //duplicateNewLayers(shape,8)
   } else {
-    console.log("Whaat")
+    sketch.UI.message("BillUI: No selected layer. Select a layer in order to mutate")
   }
   })
 }
@@ -84,5 +112,6 @@ function listenToMutationEvents(){
 //This is our main function that triggers when we start the file
 export default function() {
   initiateGUI()
-  listenToMutationEvents()
+  //listenToMutationEvents()
+  //playAroundWithArtboards()
 }
