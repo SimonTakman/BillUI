@@ -84,8 +84,6 @@ function setOneUnitRandomness(obj, type, prop){
 
 
 function setShadowColor(s){
-  console.log('inside SetShadowClor')
-  console.log(s)
   let temp = mutateShadowColor(s)
   //console.log(temp)
   temp = temp.substring(0, temp.length - 2)
