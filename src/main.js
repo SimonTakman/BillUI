@@ -38,10 +38,16 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers){
 
 //https://github.com/delighted/sketch-duplicate-to-new-artboard/blob/master/src/sketch-duplicate-to-new-artboard.js
 
-function createNewArtboard(){
+function createNewArtboard(artboardFrame, shapeFrame){
+  let newX = artboardFrame.width + artboardFrame.x + 50
+  let newY = artboardFrame.y
+  let newWidth = shapeFrame.width + 30
+  let newHeight = (shapeFrame.height * amountCopies) * 2
+  console.log(newHeight)
   let newArtboard = new sketch.Artboard({
     name: "newArtboard",
-    parent: sketch.getSelectedDocument().selectedPage
+    parent: sketch.getSelectedDocument().selectedPage,
+    frame: new sketch.Rectangle(newX, newY, newWidth, newHeight)
   })
   return newArtboard
 }
@@ -71,6 +77,7 @@ function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard){
   return tmpShape
 }
 
+
 function listenToMutationEvents(){
   
   browserWindow.webContents.on('webviewMessage', function(s){
@@ -94,12 +101,15 @@ function listenToMutationEvents(){
       let shape = selectedLayers.layers[0]
       if (shape.type === 'ShapePath'){
         //TODO: Below is a WIP for moving it to a new artboard
-        /*
-        let parentArtboard = createNewArtboard()
+        //TODO: We need to have the coordinates of the parent artboard as well as width/height
+        let artboardFrameProperties = shape.parent.frame
+        console.log(artboardFrameProperties)
+        console.log(shape)
+        let parentArtboard = createNewArtboard(artboardFrameProperties, shape.frame)
         let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(shape,parentArtboard)
-        */
+        
         //TODO: Change duplicate new layers to originalShapeInNewArtboard.
-        duplicateNewLayers(shape,selectedParameters, amountCopies)
+        duplicateNewLayers(originalShapeInNewArtboard,selectedParameters, 1)
       }
     }
     //let shape = selectedLayers.layers[0]
