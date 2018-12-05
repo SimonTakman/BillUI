@@ -9,6 +9,7 @@ import {
 import {mutateCornerRadius} from './shapeUtil'
 
 const amountCopies = 3
+const yOffset = 16
 
 let browserWindow;
 // documentation: https://developer.sketchapp.com/reference/api/
@@ -16,7 +17,7 @@ let browserWindow;
 function duplicateNewLayers(obj, selectedProperties, numberOfLayers){
   for(let i = 0; i < numberOfLayers; i++){
     let tmpObj = obj.duplicate()
-    tmpObj.frame.y = tmpObj.frame.y + (i+1)*tmpObj.frame.height*2
+    tmpObj.frame.y = tmpObj.frame.y + (i+1)*(tmpObj.frame.height+yOffset)
     tmpObj.name = tmpObj.name + "." + i
     if(selectedProperties.radious){
       mutateCornerRadius(tmpObj)
@@ -38,14 +39,13 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers){
 
 //https://github.com/delighted/sketch-duplicate-to-new-artboard/blob/master/src/sketch-duplicate-to-new-artboard.js
 
-function createNewArtboard(artboardFrame, shapeFrame){
+function createNewArtboard(artboardFrame, shapeFrame, shapeName){
   let newX = artboardFrame.width + artboardFrame.x + 50
   let newY = artboardFrame.y
   let newWidth = shapeFrame.width + 30
-  let newHeight = (shapeFrame.height * amountCopies) * 2
-  console.log(newHeight)
+  let newHeight = (shapeFrame.height * (amountCopies+1)) +  (yOffset * (amountCopies+2))
   let newArtboard = new sketch.Artboard({
-    name: "newArtboard",
+    name: "iterationOf."+shapeName,
     parent: sketch.getSelectedDocument().selectedPage,
     frame: new sketch.Rectangle(newX, newY, newWidth, newHeight)
   })
@@ -73,7 +73,8 @@ function initiateGUI(){
 function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard){
   let tmpShape = originalShape.duplicate()
   tmpShape.parent = parentArtboard
-  //TODO: Move to corrext origin etc.
+  tmpShape.frame.y = yOffset
+  tmpShape.frame.x = (parentArtboard.frame.width - tmpShape.frame.width)/2
   return tmpShape
 }
 
@@ -83,7 +84,6 @@ function listenToMutationEvents(){
   browserWindow.webContents.on('webviewMessage', function(s){
     let selectedParameters = JSON.parse(s)
     let document = sketch.getSelectedDocument()
-    console.log(document)
     let selectedLayers = document.selectedLayers
     
     
@@ -100,16 +100,10 @@ function listenToMutationEvents(){
       console.log("Not a grouped Layer")
       let shape = selectedLayers.layers[0]
       if (shape.type === 'ShapePath'){
-        //TODO: Below is a WIP for moving it to a new artboard
-        //TODO: We need to have the coordinates of the parent artboard as well as width/height
         let artboardFrameProperties = shape.parent.frame
-        console.log(artboardFrameProperties)
-        console.log(shape)
-        let parentArtboard = createNewArtboard(artboardFrameProperties, shape.frame)
+        let parentArtboard = createNewArtboard(artboardFrameProperties, shape.frame, shape.name)
         let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(shape,parentArtboard)
-        
-        //TODO: Change duplicate new layers to originalShapeInNewArtboard.
-        duplicateNewLayers(originalShapeInNewArtboard,selectedParameters, 1)
+        duplicateNewLayers(originalShapeInNewArtboard,selectedParameters, amountCopies)
       }
     }
     //let shape = selectedLayers.layers[0]
