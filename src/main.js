@@ -8,15 +8,31 @@ import {
 } from './styleUtil'
 import {mutateCornerRadius} from './shapeUtil'
 
+//TODO: Move this to to constants.
 const amountCopies = 3
 const yOffset = 16
 
 let browserWindow;
 // documentation: https://developer.sketchapp.com/reference/api/
 
+
 function duplicateNewLayers(obj, selectedProperties, numberOfLayers){
+  console.log("Do we trigger this function?")
   for(let i = 0; i < numberOfLayers; i++){
     let tmpObj = obj.duplicate()
+    if (tmpObj.type === "Group") {
+      
+      let shapedLayers = tmpObj.layers.filter(layer => layer.type === "ShapePath")
+      let textLayers = tmpObj.layers.filter(layer => layer.type === "Text")
+      if(shapedLayers.length > 0) {
+        console.log("TmpObject is equal to shapedlayer")
+        console.log(shapedLayers)
+        tmpObj = shapedLayers[0]
+        if(textLayers.length > 0){
+          textLayers[0].frame.y = textLayers[0].frame.y + (i+1)*(tmpObj.frame.height+yOffset)
+        }
+      }
+    }
     tmpObj.frame.y = tmpObj.frame.y + (i+1)*(tmpObj.frame.height+yOffset)
     tmpObj.name = tmpObj.name + "." + i
     if(selectedProperties.radious){
@@ -40,10 +56,12 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers){
 //https://github.com/delighted/sketch-duplicate-to-new-artboard/blob/master/src/sketch-duplicate-to-new-artboard.js
 
 function createNewArtboard(artboardFrame, shapeFrame, shapeName){
+  //TODO: Update offsets
   let newX = artboardFrame.width + artboardFrame.x + 50
   let newY = artboardFrame.y
   let newWidth = shapeFrame.width + 30
   let newHeight = (shapeFrame.height * (amountCopies+1)) +  (yOffset * (amountCopies+2))
+  //TODO: Think of what name it should have
   let newArtboard = new sketch.Artboard({
     name: "iterationOf."+shapeName,
     parent: sketch.getSelectedDocument().selectedPage,
@@ -70,6 +88,8 @@ function initiateGUI(){
   //browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
 }
 
+
+
 function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard){
   let tmpShape = originalShape.duplicate()
   tmpShape.parent = parentArtboard
@@ -92,10 +112,8 @@ function listenToMutationEvents(){
     let groupedLayer = selectedLayers.layers.filter(layer => layer.type === 'Group')
     if(groupedLayer.length > 0){
       console.log("Grouped Layer")
-      console.log(groupedLayer)
-      let shape = groupedLayer[0].layers.filter(layer => layer.type === 'ShapePath')
-      console.log(shape.length)
-      duplicateNewLayers(shape[0],selectedParameters, amountCopies)
+      //let shape = groupedLayer[0].layers.filter(layer => layer.type === 'ShapePath')
+      duplicateNewLayers(groupedLayer[0],selectedParameters, 3)
     } else {
       console.log("Not a grouped Layer")
       let shape = selectedLayers.layers[0]
