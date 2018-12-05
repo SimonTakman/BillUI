@@ -8,16 +8,19 @@ import {
 } from './styleUtil'
 import {mutateCornerRadius} from './shapeUtil'
 
-const amountCopies = 3
+const amountCopies = 8
 const yOffset = 16
+const xOffset = 15
 
 let browserWindow;
 // documentation: https://developer.sketchapp.com/reference/api/
 
-function duplicateNewLayers(obj, selectedProperties, numberOfLayers){
+function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFrame){
   for(let i = 0; i < numberOfLayers; i++){
     let tmpObj = obj.duplicate()
-    tmpObj.frame.y = tmpObj.frame.y + (i+1)*(tmpObj.frame.height+yOffset)
+    //ADD EXTRA STARTINGPOINT
+    //tmpObj.frame.y = tmpObj.frame.y + (i+1)*(tmpObj.frame.height+yOffset)
+    tmpObj.frame.y = mutationFrame.y + mutationFrame.height + yOffset + (i)*(tmpObj.frame.height + yOffset)
     tmpObj.name = tmpObj.name + "." + i
     if(selectedProperties.radious){
       mutateCornerRadius(tmpObj)
@@ -70,25 +73,39 @@ function initiateGUI(){
   //browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
 }
 
-function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard){
+function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard, header){
   let tmpShape = originalShape.duplicate()
   tmpShape.parent = parentArtboard
-  tmpShape.frame.y = yOffset
+  tmpShape.frame.y = (yOffset * 2) + header.frame.height
   tmpShape.frame.x = (parentArtboard.frame.width - tmpShape.frame.width)/2
   return tmpShape
 }
 
+function addDescrption(parentArtboard, text, cordX, cordY) {
+  console.log('Inside addDescrption')
+  let myText = new sketch.Text({
+    text: text
+  })
+  //text.font = Roboto
+  myText.parent = parentArtboard
+  myText.systemFontSize = 14
+  myText.frame.x = cordX
+  myText.frame.y = cordY
+  myText.style.opacity = 0.7
+  return myText
+}
+
 
 function listenToMutationEvents(){
-  
+
   browserWindow.webContents.on('webviewMessage', function(s){
     let selectedParameters = JSON.parse(s)
     let document = sketch.getSelectedDocument()
     let selectedLayers = document.selectedLayers
-    
-    
+
+
   if(!selectedLayers.isEmpty){
-    
+
     let groupedLayer = selectedLayers.layers.filter(layer => layer.type === 'Group')
     if(groupedLayer.length > 0){
       console.log("Grouped Layer")
@@ -102,8 +119,11 @@ function listenToMutationEvents(){
       if (shape.type === 'ShapePath'){
         let artboardFrameProperties = shape.parent.frame
         let parentArtboard = createNewArtboard(artboardFrameProperties, shape.frame, shape.name)
-        let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(shape,parentArtboard)
-        duplicateNewLayers(originalShapeInNewArtboard,selectedParameters, amountCopies)
+        let originalText = addDescrption(parentArtboard, 'Original', xOffset, yOffset)
+        let mutationText = addDescrption(parentArtboard, 'Mutation', xOffset, shape.frame.height + (3 * yOffset) + originalText.frame.height)
+        parentArtboard.frame.height = parentArtboard.frame.height + originalText.frame.height + mutationText.frame.height + (3 * yOffset)
+        let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(shape, parentArtboard, originalText)
+        duplicateNewLayers(originalShapeInNewArtboard,selectedParameters, amountCopies, mutationText.frame)
       }
     }
     //let shape = selectedLayers.layers[0]
