@@ -36,7 +36,6 @@ export function mutateShadow(obj){
       }
     }
   }else {
-    console.log('Filled!')
     if(coinToss(shadowRate)){
       shape.disableAllShadows()
     }else {

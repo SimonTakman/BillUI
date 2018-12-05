@@ -7,34 +7,39 @@ import {
   mutateShadow
 } from './styleUtil'
 import {mutateCornerRadius} from './shapeUtil'
+import {getGroups, getShapePaths} from './layerUtil'
 
 //TODO: Move this to to constants.
-const amountCopies = 3
+const amountCopies = 8
 const yOffset = 16
+const xOffset = 15
 
 let browserWindow;
 // documentation: https://developer.sketchapp.com/reference/api/
 
 
-function duplicateNewLayers(obj, selectedProperties, numberOfLayers){
-  console.log("Do we trigger this function?")
+function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFrame){
+  
   for(let i = 0; i < numberOfLayers; i++){
     let tmpObj = obj.duplicate()
     if (tmpObj.type === "Group") {
-      
       let shapedLayers = tmpObj.layers.filter(layer => layer.type === "ShapePath")
       let textLayers = tmpObj.layers.filter(layer => layer.type === "Text")
       if(shapedLayers.length > 0) {
-        console.log("TmpObject is equal to shapedlayer")
-        console.log(shapedLayers)
-        tmpObj = shapedLayers[0]
+        tmpObj.frame.y = mutationFrame.y + mutationFrame.height + yOffset + (i)*(tmpObj.frame.height + yOffset)
+        console.log(tmpObj.frame.y)
+        tmpObj.name = tmpObj.name + "." + i
         if(textLayers.length > 0){
-          textLayers[0].frame.y = textLayers[0].frame.y + (i+1)*(tmpObj.frame.height+yOffset)
+          //This only works for centered text on a rectangle
+          textLayers[0].frame.y = shapedLayers[0].frame.y + (shapedLayers[0].frame.height / 2) - (textLayers[0].frame.height / 2)
         }
+        tmpObj = shapedLayers[0]
       }
+    } else {
+      tmpObj.frame.y = mutationFrame.y + mutationFrame.height + yOffset + (i)*(tmpObj.frame.height + yOffset)
+      tmpObj.name = tmpObj.name + "." + i
     }
-    tmpObj.frame.y = tmpObj.frame.y + (i+1)*(tmpObj.frame.height+yOffset)
-    tmpObj.name = tmpObj.name + "." + i
+
     if(selectedProperties.radious){
       mutateCornerRadius(tmpObj)
     }
@@ -88,48 +93,78 @@ function initiateGUI(){
   //browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
 }
 
-
-
-function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard){
+function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard, header){
   let tmpShape = originalShape.duplicate()
   tmpShape.parent = parentArtboard
-  tmpShape.frame.y = yOffset
+  tmpShape.frame.y = (yOffset * 2) + header.frame.height
   tmpShape.frame.x = (parentArtboard.frame.width - tmpShape.frame.width)/2
   return tmpShape
 }
 
+function addDescrption(parentArtboard, text, cordX, cordY) {
+  let myText = new sketch.Text({
+    text: text
+  })
+  //text.font = Roboto
+  myText.parent = parentArtboard
+  myText.systemFontSize = 14
+  myText.frame.x = cordX
+  myText.frame.y = cordY
+  myText.style.opacity = 0.7
+  return myText
+}
+
 
 function listenToMutationEvents(){
-  
+
   browserWindow.webContents.on('webviewMessage', function(s){
     let selectedParameters = JSON.parse(s)
     let document = sketch.getSelectedDocument()
     let selectedLayers = document.selectedLayers
-    
-    
-  if(!selectedLayers.isEmpty){
-    
-    let groupedLayer = selectedLayers.layers.filter(layer => layer.type === 'Group')
-    if(groupedLayer.length > 0){
-      console.log("Grouped Layer")
-      //let shape = groupedLayer[0].layers.filter(layer => layer.type === 'ShapePath')
-      duplicateNewLayers(groupedLayer[0],selectedParameters, 3)
-    } else {
-      console.log("Not a grouped Layer")
-      let shape = selectedLayers.layers[0]
-      if (shape.type === 'ShapePath'){
-        let artboardFrameProperties = shape.parent.frame
-        let parentArtboard = createNewArtboard(artboardFrameProperties, shape.frame, shape.name)
-        let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(shape,parentArtboard)
-        duplicateNewLayers(originalShapeInNewArtboard,selectedParameters, amountCopies)
+      if(!selectedLayers.isEmpty) {
+        //TODO: See if this is the correct approach or not
+        let layers = getShape(selectedLayers)
+        if(layers !== null){
+          let artboardProperties = createArtboardTemplate(layers.layers[0])
+          let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(layers.layers[0], artboardProperties.parentArtboard, artboardProperties.originalText)
+          duplicateNewLayers(originalShapeInNewArtboard, selectedParameters, amountCopies, artboardProperties.mutationText.frame)
+        } else {
+          sketch.UI.message("No layers found")
+        }
+      } else {
+        sketch.UI.message("BillUI: No selected layer. Select a layer in order to mutate")
       }
-    }
-    //let shape = selectedLayers.layers[0]
-    //duplicateNewLayers(shape,8)
-  } else {
-    sketch.UI.message("BillUI: No selected layer. Select a layer in order to mutate")
-  }
   })
+}
+
+function getShape(selectedLayers){
+  let layers = getGroups(selectedLayers.layers) 
+  if (layers.length > 0){
+    //THIS IS A GROUP
+    return {"layers": layers, "type": layers[0].type}
+  } else {
+    layers = getShapePaths(selectedLayers.layers)
+    if(layers.length > 0){
+      return {"layers": layers, "type": layers[0].type}
+      // THIS IS A SHAPEPATH
+      //sketch.UI.message("This is a shapepath")
+    }
+  } 
+  return null
+}
+
+function createArtboardTemplate(obj){
+  let artboardFrameProperties = obj.parent.frame
+  let parentArtboard = createNewArtboard(artboardFrameProperties, obj.frame, obj.name)
+  let originalText = addDescrption(parentArtboard, 'Original', xOffset, yOffset)
+  let mutationText = addDescrption(parentArtboard, 'Mutation', xOffset, obj.frame.height + (3 * yOffset) + originalText.frame.height)
+  parentArtboard.frame.height = parentArtboard.frame.height + originalText.frame.height + mutationText.frame.height + (3 * yOffset)
+  return {"parentArtboard": parentArtboard, "originalText": originalText, "mutationText": mutationText}
+}
+
+function todoMoveThisIntoSomethingLater(){
+  
+  let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(shape, parentArtboard, originalText)
 }
 
 //This is our main function that triggers when we start the file

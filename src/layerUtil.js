@@ -19,5 +19,5 @@ export const hasShapePaths = layers => {
 }
 
 export const getShapePaths = layers =>{
-  return layers.filter(layer => layer.type = 'ShapePath')
+  return layers.filter(layer => layer.type === 'ShapePath')
 }
