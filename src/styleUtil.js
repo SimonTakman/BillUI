@@ -25,29 +25,27 @@ export function mutateBorderThickness(obj){
   }
 }
 
-//TODO: Clear when disable shadow!
 export function mutateShadow(obj){
-  //console.log('inside mutateShadow')
-  //console.log(obj.style.sketchObject)
   let shape = obj.style.sketchObject
-  if(shape.hasEnabledShadow() === 0 || shape.hasEnabledShadow() === undefined) {
-    if(coinToss(0.5)){
-      shape.addStylePartOfType(2)
+  if(shape.hasEnabledShadow() === 0) {
+    if(coinToss(0.5)) {
+      if(obj.style.shadows[0] !== undefined) {
+        obj.style.shadows[0].enabled = true
+      }else {
+        shape.addStylePartOfType(2)
+      }
     }
-  }
-  else {
-    //console.log('FUCKING FILLED')
+  }else {
+    console.log('Filled!')
     if(coinToss(shadowRate)){
-      //console.log('Disable Shadow')
       shape.disableAllShadows()
     }else {
-      //console.log('Mutate Shadow')
       let shadow = obj.style.shadows[0]
-      setShadowColor(shadow)
       setOneUnitRandomness(shadow, 'blur', shadow.blur)
       setOneUnitRandomness(shadow, 'x', shadow.x)
       setOneUnitRandomness(shadow, 'y', shadow.y)
       setOneUnitRandomness(shadow, 'spread', shadow.spread)
+      setShadowColor(shadow)
     }
   }
 }
