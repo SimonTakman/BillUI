@@ -41,4 +41,5 @@ export function mutateShadowColor(shadow) {
     let newColorRGB = temp.map(x => mutate(x, shadowColorRate, colorLimit, 1))
     return rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2])
   }
+  return shadow.color
 }
