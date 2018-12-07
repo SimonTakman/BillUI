@@ -8,11 +8,11 @@ import {
 } from './styleUtil'
 import {mutateCornerRadius} from './shapeUtil'
 import {getGroups, getShapePaths} from './layerUtil'
-
-//TODO: Move this to to constants.
-const amountCopies = 8
-const yOffset = 16
-const xOffset = 15
+import {
+  AMOUNT_COPIES,
+  X_OFFSET,
+  Y_OFFSET
+} from './constants'
 
 let browserWindow
 // documentation: https://developer.sketchapp.com/reference/api/
@@ -21,7 +21,7 @@ let browserWindow
 
 
 function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFrame){
-  
+
   for(let i = 0; i < numberOfLayers; i++){
     console.log(obj)
     let tmpObj = obj.duplicate()
@@ -30,7 +30,7 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFra
       let shapedLayers = tmpObj.layers.filter(layer => layer.type === "ShapePath")
       let textLayers = tmpObj.layers.filter(layer => layer.type === "Text")
       if(shapedLayers.length > 0) {
-        tmpObj.frame.y = mutationFrame.y + mutationFrame.height + yOffset + (i)*(tmpObj.frame.height + yOffset)
+        tmpObj.frame.y = mutationFrame.y + mutationFrame.height + Y_OFFSET + (i)*(tmpObj.frame.height + Y_OFFSET)
         console.log(tmpObj.frame.y)
         tmpObj.name = tmpObj.name + "." + i
         if(textLayers.length > 0){
@@ -40,7 +40,7 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFra
         tmpObj = shapedLayers[0]
       }
     } else {
-      tmpObj.frame.y = mutationFrame.y + mutationFrame.height + yOffset + (i)*(tmpObj.frame.height + yOffset)
+      tmpObj.frame.y = mutationFrame.y + mutationFrame.height + Y_OFFSET + (i)*(tmpObj.frame.height + Y_OFFSET)
       tmpObj.name = tmpObj.name + "." + i
     }
 
@@ -70,7 +70,7 @@ function createNewArtboard(artboardFrame, shapeFrame, shapeName){
   let newX = artboardFrame.width + artboardFrame.x + 50
   let newY = artboardFrame.y
   let newWidth = shapeFrame.width + 30
-  let newHeight = (shapeFrame.height * (amountCopies+1)) +  (yOffset * (amountCopies+2))
+  let newHeight = (shapeFrame.height * (AMOUNT_COPIES+1)) + Y_OFFSET + (Y_OFFSET * (AMOUNT_COPIES+2))
   //TODO: Think of what name it should have
   let newArtboard = new sketch.Artboard({
     name: "iterationOf."+shapeName,
@@ -104,12 +104,12 @@ function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard, heade
   //tmpShape.flow.properties = [originalShape.id]
   console.log(tmpShape)
   tmpShape.parent = parentArtboard
-  tmpShape.frame.y = (yOffset * 2) + header.frame.height
+  tmpShape.frame.y = (Y_OFFSET * 3) + header.frame.height
   tmpShape.frame.x = (parentArtboard.frame.width - tmpShape.frame.width)/2
   return tmpShape
 }
 
-function addDescrption(parentArtboard, text, cordX, cordY) {
+function addDescrption(parentArtboard, text, cordX, cordY, opacity) {
   let myText = new sketch.Text({
     text: text
   })
@@ -118,7 +118,7 @@ function addDescrption(parentArtboard, text, cordX, cordY) {
   myText.systemFontSize = 14
   myText.frame.x = cordX
   myText.frame.y = cordY
-  myText.style.opacity = 0.7
+  myText.style.opacity = opacity
   return myText
 }
 
@@ -156,7 +156,7 @@ function listenToMutationEvents(){
         if(layers !== null){
           let artboardProperties = createArtboardTemplate(layers.layers[0])
           let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(layers.layers[0], artboardProperties.parentArtboard, artboardProperties.originalText)
-          duplicateNewLayers(originalShapeInNewArtboard, selectedParameters, amountCopies, artboardProperties.mutationText.frame)
+          duplicateNewLayers(originalShapeInNewArtboard, selectedParameters, AMOUNT_COPIES, artboardProperties.mutationText.frame)
         } else {
           sketch.UI.message("No layers found")
         }
@@ -167,7 +167,7 @@ function listenToMutationEvents(){
 }
 
 function getShape(selectedLayers){
-  let layers = getGroups(selectedLayers.layers) 
+  let layers = getGroups(selectedLayers.layers)
   if (layers.length > 0){
     //THIS IS A GROUP
     return {"layers": layers, "type": layers[0].type}
@@ -178,21 +178,22 @@ function getShape(selectedLayers){
       // THIS IS A SHAPEPATH
       //sketch.UI.message("This is a shapepath")
     }
-  } 
+  }
   return null
 }
 
 function createArtboardTemplate(obj){
   let artboardFrameProperties = obj.parent.frame
   let parentArtboard = createNewArtboard(artboardFrameProperties, obj.frame, obj.name)
-  let originalText = addDescrption(parentArtboard, 'Original', xOffset, yOffset)
-  let mutationText = addDescrption(parentArtboard, 'Mutation', xOffset, obj.frame.height + (3 * yOffset) + originalText.frame.height)
-  parentArtboard.frame.height = parentArtboard.frame.height + originalText.frame.height + mutationText.frame.height + (3 * yOffset)
+  let originalText = addDescrption(parentArtboard, 'Original', X_OFFSET, Y_OFFSET, 0.7)
+  let id = addDescrption(parentArtboard, 'ABS-CCH-728-938-192-PNX-XHP', X_OFFSET, Y_OFFSET + ( Y_OFFSET / 2 ) + originalText.frame.height, 0.2)
+  let mutationText = addDescrption(parentArtboard, 'Mutation', X_OFFSET, obj.frame.height + (3 * Y_OFFSET) + originalText.frame.height + id.frame.height, 0.7)
+  parentArtboard.frame.height = parentArtboard.frame.height + originalText.frame.height + mutationText.frame.height + (3 * Y_OFFSET)
   return {"parentArtboard": parentArtboard, "originalText": originalText, "mutationText": mutationText}
 }
 
 function todoMoveThisIntoSomethingLater(){
-  
+
   let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(shape, parentArtboard, originalText)
 }
 

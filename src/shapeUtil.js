@@ -1,10 +1,10 @@
 import {mutate} from './mutationUtil'
-//mutate(curValue, mutationRate, limit, prob)
-
-const cornerRadiusProb = 0.9
-const cornerRadiusRate = 1
+import {
+  CORNER_RADIUS_PROB,
+  CORNER_RADIUS_RATE
+} from './constants'
 
 export function mutateCornerRadius(obj) {
   let sObj = obj.sketchObject
-  sObj.setCornerRadiusFloat(mutate(sObj.cornerRadiusFloat(), cornerRadiusRate, sObj.maximumAllowedRadius(), cornerRadiusProb))
+  sObj.setCornerRadiusFloat(mutate(sObj.cornerRadiusFloat(), CORNER_RADIUS_RATE, sObj.maximumAllowedRadius(), CORNER_RADIUS_PROB))
 }
