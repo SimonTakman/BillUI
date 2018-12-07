@@ -16,6 +16,7 @@ const xOffset = 15
 
 let browserWindow;
 // documentation: https://developer.sketchapp.com/reference/api/
+// Action api: https://github.com/bomberstudios/sketch-action-api-tester
 
 
 function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFrame){
