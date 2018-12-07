@@ -21,3 +21,19 @@ export const hasShapePaths = layers => {
 export const getShapePaths = layers =>{
   return layers.filter(layer => layer.type === 'ShapePath')
 }
+
+export const getText = layers => {
+  return layers.filter(layer => layer.type === "Text")
+}
+
+export const sortTextDescendingOrder = layers => {
+  return layers.sort((a,b) => b.name.length - a.name.length)
+}
+
+export const getTextElementByValue = (layers, text) => {
+  return layers.filter(layer => layer.name === text)
+}
+
+export const hasTextElementByValue = (layers, text) => {
+  return layers.filter(layer => layer.name === text).length > 0 ? true : false
+}

@@ -7,7 +7,12 @@ import {
   mutateShadow
 } from './styleUtil'
 import {mutateCornerRadius} from './shapeUtil'
-import {getGroups, getShapePaths} from './layerUtil'
+import {
+  getGroups,
+  getShapePaths,
+  getText,
+  hasTextElementByValue,
+  sortTextDescendingOrder} from './layerUtil'
 import {
   AMOUNT_COPIES,
   X_OFFSET,
@@ -23,15 +28,12 @@ let browserWindow
 function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFrame){
 
   for(let i = 0; i < numberOfLayers; i++){
-    console.log(obj)
     let tmpObj = obj.duplicate()
-    tmpObj.mutationParent = obj.mutationParent
     if (tmpObj.type === "Group") {
       let shapedLayers = tmpObj.layers.filter(layer => layer.type === "ShapePath")
       let textLayers = tmpObj.layers.filter(layer => layer.type === "Text")
       if(shapedLayers.length > 0) {
         tmpObj.frame.y = mutationFrame.y + mutationFrame.height + Y_OFFSET + (i)*(tmpObj.frame.height + Y_OFFSET)
-        console.log(tmpObj.frame.y)
         tmpObj.name = tmpObj.name + "." + i
         if(textLayers.length > 0){
           //This only works for centered text on a rectangle
@@ -59,7 +61,6 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFra
     if(selectedProperties.shadow){
       mutateShadow(tmpObj)
     }
-    console.log(tmpObj.mutationParent)
   }
 }
 
@@ -70,7 +71,7 @@ function createNewArtboard(artboardFrame, shapeFrame, shapeName){
   let newX = artboardFrame.width + artboardFrame.x + 50
   let newY = artboardFrame.y
   let newWidth = shapeFrame.width + 30
-  let newHeight = (shapeFrame.height * (AMOUNT_COPIES+1)) + Y_OFFSET + (Y_OFFSET * (AMOUNT_COPIES+2))
+  let newHeight = (shapeFrame.height * (AMOUNT_COPIES+1)) + (Y_OFFSET * (AMOUNT_COPIES+2))
   //TODO: Think of what name it should have
   let newArtboard = new sketch.Artboard({
     name: "iterationOf."+shapeName,
@@ -100,22 +101,19 @@ function initiateGUI(){
 
 function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard, header){
   let tmpShape = originalShape.duplicate()
-  tmpShape.mutationParent = originalShape.id
-  //tmpShape.flow.properties = [originalShape.id]
-  console.log(tmpShape)
   tmpShape.parent = parentArtboard
-  tmpShape.frame.y = (Y_OFFSET * 3) + header.frame.height
+  tmpShape.frame.y = (Y_OFFSET * 2) + header.frame.height
   tmpShape.frame.x = (parentArtboard.frame.width - tmpShape.frame.width)/2
   return tmpShape
 }
 
-function addDescrption(parentArtboard, text, cordX, cordY, opacity) {
+function addDescrption(parentArtboard, text, cordX, cordY, opacity, fontSize) {
   let myText = new sketch.Text({
     text: text
   })
   //text.font = Roboto
   myText.parent = parentArtboard
-  myText.systemFontSize = 14
+  myText.systemFontSize = fontSize
   myText.frame.x = cordX
   myText.frame.y = cordY
   myText.style.opacity = opacity
@@ -124,23 +122,20 @@ function addDescrption(parentArtboard, text, cordX, cordY, opacity) {
 
 function listenToSwapEvents(){
   browserWindow.webContents.on('swapMessage',function(){
-    //let document = sketch.getSelectedDocument()
+    let document = sketch.getSelectedDocument()
     let selectedLayers = document.selectedLayers
     if(!selectedLayers.isEmpty){
       let obj = selectedLayers.layers[0]
-      console.log(obj)
-      console.log("This is my mutationParent")
-      console.log(obj.mutationParent)
+      let artboard = obj.parent
+      let textLayers = getText(artboard.layers)
+      let sortedTextLayer = sortTextDescendingOrder(textLayers)
       let sObj = obj.sketchObject
-      console.log(obj)
-      let originalObj = document.getLayerWithID(obj.mutationParent)
+      let originalObj = document.getLayerWithID(sortedTextLayer[0].name)
       if(originalObj){ 
-        console.log("Did I reach this..?")
         originalObj.style = obj.style
         let sOriginalObj = originalObj.sketchObject
         sOriginalObj.setCornerRadiusFloat(sObj.cornerRadiusFloat())
       }
-
     }
   })
 }
@@ -185,9 +180,15 @@ function getShape(selectedLayers){
 function createArtboardTemplate(obj){
   let artboardFrameProperties = obj.parent.frame
   let parentArtboard = createNewArtboard(artboardFrameProperties, obj.frame, obj.name)
-  let originalText = addDescrption(parentArtboard, 'Original', X_OFFSET, Y_OFFSET, 0.7)
-  let id = addDescrption(parentArtboard, 'ABS-CCH-728-938-192-PNX-XHP', X_OFFSET, Y_OFFSET + ( Y_OFFSET / 2 ) + originalText.frame.height, 0.2)
-  let mutationText = addDescrption(parentArtboard, 'Mutation', X_OFFSET, obj.frame.height + (3 * Y_OFFSET) + originalText.frame.height + id.frame.height, 0.7)
+  let originalText = addDescrption(parentArtboard, 'Original', X_OFFSET, Y_OFFSET, 0.7, 14)
+  if(getText(obj.parent.layers).length > 2 && hasTextElementByValue(obj.parent.layers, "Mutation")){
+    let textLayers = getText(obj.parent.layers)
+    let sortedTextLayer = sortTextDescendingOrder(textLayers)
+    addDescrption(parentArtboard, sortedTextLayer[0].name, X_OFFSET, Y_OFFSET + 1 + originalText.frame.height, 0.2, 2)
+  } else {
+    addDescrption(parentArtboard, obj.id, X_OFFSET, Y_OFFSET + 1 + originalText.frame.height, 0.2, 2)
+  }
+  let mutationText = addDescrption(parentArtboard, 'Mutation', X_OFFSET, obj.frame.height + (3 * Y_OFFSET) + originalText.frame.height, 0.7, 14)
   parentArtboard.frame.height = parentArtboard.frame.height + originalText.frame.height + mutationText.frame.height + (3 * Y_OFFSET)
   return {"parentArtboard": parentArtboard, "originalText": originalText, "mutationText": mutationText}
 }
