@@ -14,7 +14,7 @@ const amountCopies = 8
 const yOffset = 16
 const xOffset = 15
 
-let browserWindow;
+let browserWindow
 // documentation: https://developer.sketchapp.com/reference/api/
 // Action api: https://github.com/bomberstudios/sketch-action-api-tester
 // Action example: https://github.com/BohemianCoding/SketchAPI/blob/develop/examples/selection-changed/src/selection-changed.js
@@ -23,7 +23,9 @@ let browserWindow;
 function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFrame){
   
   for(let i = 0; i < numberOfLayers; i++){
+    console.log(obj)
     let tmpObj = obj.duplicate()
+    tmpObj.mutationParent = obj.mutationParent
     if (tmpObj.type === "Group") {
       let shapedLayers = tmpObj.layers.filter(layer => layer.type === "ShapePath")
       let textLayers = tmpObj.layers.filter(layer => layer.type === "Text")
@@ -57,6 +59,7 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFra
     if(selectedProperties.shadow){
       mutateShadow(tmpObj)
     }
+    console.log(tmpObj.mutationParent)
   }
 }
 
@@ -97,6 +100,9 @@ function initiateGUI(){
 
 function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard, header){
   let tmpShape = originalShape.duplicate()
+  tmpShape.mutationParent = originalShape.id
+  //tmpShape.flow.properties = [originalShape.id]
+  console.log(tmpShape)
   tmpShape.parent = parentArtboard
   tmpShape.frame.y = (yOffset * 2) + header.frame.height
   tmpShape.frame.x = (parentArtboard.frame.width - tmpShape.frame.width)/2
@@ -116,10 +122,31 @@ function addDescrption(parentArtboard, text, cordX, cordY) {
   return myText
 }
 
+function listenToSwapEvents(){
+  browserWindow.webContents.on('swapMessage',function(){
+    //let document = sketch.getSelectedDocument()
+    let selectedLayers = document.selectedLayers
+    if(!selectedLayers.isEmpty){
+      let obj = selectedLayers.layers[0]
+      console.log(obj)
+      console.log("This is my mutationParent")
+      console.log(obj.mutationParent)
+      let sObj = obj.sketchObject
+      console.log(obj)
+      let originalObj = document.getLayerWithID(obj.mutationParent)
+      if(originalObj){ 
+        console.log("Did I reach this..?")
+        originalObj.style = obj.style
+        let sOriginalObj = originalObj.sketchObject
+        sOriginalObj.setCornerRadiusFloat(sObj.cornerRadiusFloat())
+      }
+
+    }
+  })
+}
 
 function listenToMutationEvents(){
-
-  browserWindow.webContents.on('webviewMessage', function(s){
+  browserWindow.webContents.on('mutateMessage', function(s){
     let selectedParameters = JSON.parse(s)
     let document = sketch.getSelectedDocument()
     let selectedLayers = document.selectedLayers
@@ -173,4 +200,5 @@ function todoMoveThisIntoSomethingLater(){
 export default function() {
   initiateGUI()
   listenToMutationEvents()
+  listenToSwapEvents()
 }

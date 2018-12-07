@@ -2317,16 +2317,26 @@ module.exports = function buildAPI(browserWindow, panel, webview) {
 /*!**************************!*\
   !*** ./src/colorUtil.js ***!
   \**************************/
-/*! exports provided: mutateColor */
+/*! exports provided: mutateColor, mutateShadowColor */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mutateColor", function() { return mutateColor; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mutateShadowColor", function() { return mutateShadowColor; });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./src/constants.js");
+/* harmony import */ var _mutationUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mutationUtil */ "./src/mutationUtil.js");
 
-var color = '#65F0FF'; //TODO: add export
-//TODO: Added ff for opacity reasons 
+ //mutate(curValue, mutationRate, limit, prob)
+
+var fillColorProb = 0.95;
+var borderColorProb = 0.9;
+var shadowColorProb = 0.7;
+var fillColorRate = 0.1;
+var borderColorRate = 0.3;
+var shadowColorRate = 0.2;
+var colorLimit = 255; //TODO: add export
+//TODO: Added ff for opacity reasons
 
 var rgbToHex = function rgbToHex(r, g, b) {
   return '#' + [r, g, b].map(function (x) {
@@ -2344,37 +2354,26 @@ var hexToRgb = function hexToRgb(hex) {
   });
 };
 
-function mutate(low, high) {
-  var item = Math.floor(Math.random() * (high - low) + low);
-  return item;
+function mutateColor(obj) {
+  if (Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_1__["coinToss"])(fillColorProb)) {
+    var temp = hexToRgb(obj.color);
+    var newColorRGB = temp.map(function (x) {
+      return Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_1__["mutate"])(x, fillColorRate, colorLimit, 1);
+    });
+    var hex = rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2]);
+    obj.color = hex;
+  }
 }
-
-function getLowestMutationColors(colorFraction) {
-  var newColorFraction = Math.floor(colorFraction - 255 * _constants__WEBPACK_IMPORTED_MODULE_0__["MUTATION"]);
-
-  if (newColorFraction < 0) {
-    newColorFraction = 0;
+function mutateShadowColor(shadow) {
+  if (Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_1__["coinToss"])(shadowColorProb)) {
+    var temp = hexToRgb(shadow.color);
+    var newColorRGB = temp.map(function (x) {
+      return Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_1__["mutate"])(x, shadowColorRate, colorLimit, 1);
+    });
+    return rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2]);
   }
 
-  return newColorFraction;
-}
-
-function getHighestMutationColors(colorFraction) {
-  var newColorFraction = Math.floor(colorFraction + 255 * _constants__WEBPACK_IMPORTED_MODULE_0__["MUTATION"]);
-
-  if (newColorFraction > 255) {
-    newColorFraction = 255;
-  }
-
-  return newColorFraction;
-}
-
-function mutateColor(hexColor) {
-  var temp = hexToRgb(hexColor);
-  var newColorRGB = temp.map(function (x) {
-    return mutate(getLowestMutationColors(x), getHighestMutationColors(x));
-  });
-  return rgbToHex(newColorRGB[0], newColorRGB[1], newColorRGB[2]);
+  return shadow.color;
 }
 
 /***/ }),
@@ -2390,6 +2389,54 @@ function mutateColor(hexColor) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MUTATION", function() { return MUTATION; });
 var MUTATION = 0.10;
+
+/***/ }),
+
+/***/ "./src/layerUtil.js":
+/*!**************************!*\
+  !*** ./src/layerUtil.js ***!
+  \**************************/
+/*! exports provided: hasArtboards, getArtboards, hasGroups, getGroups, hasShapePaths, getShapePaths */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasArtboards", function() { return hasArtboards; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getArtboards", function() { return getArtboards; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasGroups", function() { return hasGroups; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGroups", function() { return getGroups; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasShapePaths", function() { return hasShapePaths; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getShapePaths", function() { return getShapePaths; });
+var hasArtboards = function hasArtboards(layers) {
+  return layers.filter(function (layer) {
+    return layer.type === 'Artboard';
+  }).length > 0 ? true : false;
+};
+var getArtboards = function getArtboards(layers) {
+  return layers.filter(function (layer) {
+    return layer.type === 'Artboard';
+  });
+};
+var hasGroups = function hasGroups(layers) {
+  return layers.filter(function (layer) {
+    return layer.type === 'Group';
+  }).length > 0 ? true : false;
+};
+var getGroups = function getGroups(layers) {
+  return layers.filter(function (layer) {
+    return layer.type === 'Group';
+  });
+};
+var hasShapePaths = function hasShapePaths(layers) {
+  return layers.filter(function (layer) {
+    return layer.type === 'ShapePath';
+  }).length > 0 ? true : false;
+};
+var getShapePaths = function getShapePaths(layers) {
+  return layers.filter(function (layer) {
+    return layer.type === 'ShapePath';
+  });
+};
 
 /***/ }),
 
@@ -2409,30 +2456,63 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _colorUtil__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./colorUtil */ "./src/colorUtil.js");
 /* harmony import */ var _styleUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./styleUtil */ "./src/styleUtil.js");
 /* harmony import */ var _shapeUtil__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./shapeUtil */ "./src/shapeUtil.js");
+/* harmony import */ var _layerUtil__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./layerUtil */ "./src/layerUtil.js");
 
 
 
 
 
-var browserWindow; // documentation: https://developer.sketchapp.com/reference/api/
+ //TODO: Move this to to constants.
 
-function duplicateNewLayers(obj, selectedProperties, numberOfLayers) {
+var amountCopies = 8;
+var yOffset = 16;
+var xOffset = 15;
+var browserWindow;
+var document; // documentation: https://developer.sketchapp.com/reference/api/
+// Action api: https://github.com/bomberstudios/sketch-action-api-tester
+// Action example: https://github.com/BohemianCoding/SketchAPI/blob/develop/examples/selection-changed/src/selection-changed.js
+
+function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFrame) {
   for (var i = 0; i < numberOfLayers; i++) {
+    console.log(obj);
     var tmpObj = obj.duplicate();
-    tmpObj.frame.y = tmpObj.frame.y + (i + 1) * tmpObj.frame.height * 2;
-    tmpObj.name = tmpObj.name + "." + i;
+    tmpObj.mutationParent = obj.mutationParent;
+
+    if (tmpObj.type === "Group") {
+      var shapedLayers = tmpObj.layers.filter(function (layer) {
+        return layer.type === "ShapePath";
+      });
+      var textLayers = tmpObj.layers.filter(function (layer) {
+        return layer.type === "Text";
+      });
+
+      if (shapedLayers.length > 0) {
+        tmpObj.frame.y = mutationFrame.y + mutationFrame.height + yOffset + i * (tmpObj.frame.height + yOffset);
+        console.log(tmpObj.frame.y);
+        tmpObj.name = tmpObj.name + "." + i;
+
+        if (textLayers.length > 0) {
+          //This only works for centered text on a rectangle
+          textLayers[0].frame.y = shapedLayers[0].frame.y + shapedLayers[0].frame.height / 2 - textLayers[0].frame.height / 2;
+        }
+
+        tmpObj = shapedLayers[0];
+      }
+    } else {
+      tmpObj.frame.y = mutationFrame.y + mutationFrame.height + yOffset + i * (tmpObj.frame.height + yOffset);
+      tmpObj.name = tmpObj.name + "." + i;
+    }
 
     if (selectedProperties.radious) {
       Object(_shapeUtil__WEBPACK_IMPORTED_MODULE_4__["mutateCornerRadius"])(tmpObj);
     }
 
     if (selectedProperties.fillsColor) {
-      var color = Object(_colorUtil__WEBPACK_IMPORTED_MODULE_2__["mutateColor"])(tmpObj.style.fills[0].color);
-      tmpObj.style.fills[0].color = color;
+      Object(_colorUtil__WEBPACK_IMPORTED_MODULE_2__["mutateColor"])(tmpObj.style.fills[0]);
     }
 
     if (selectedProperties.bordersColor) {
-      Object(_styleUtil__WEBPACK_IMPORTED_MODULE_3__["mutateBorderColor"])(tmpObj);
+      Object(_styleUtil__WEBPACK_IMPORTED_MODULE_3__["mutateBorderColor"])(tmpObj.style.borders[0]);
     }
 
     if (selectedProperties.borderWidth) {
@@ -2442,7 +2522,25 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers) {
     if (selectedProperties.shadow) {
       Object(_styleUtil__WEBPACK_IMPORTED_MODULE_3__["mutateShadow"])(tmpObj);
     }
+
+    console.log(tmpObj.mutationParent);
   }
+} //https://github.com/delighted/sketch-duplicate-to-new-artboard/blob/master/src/sketch-duplicate-to-new-artboard.js
+
+
+function createNewArtboard(artboardFrame, shapeFrame, shapeName) {
+  //TODO: Update offsets
+  var newX = artboardFrame.width + artboardFrame.x + 50;
+  var newY = artboardFrame.y;
+  var newWidth = shapeFrame.width + 30;
+  var newHeight = shapeFrame.height * (amountCopies + 1) + yOffset * (amountCopies + 2); //TODO: Think of what name it should have
+
+  var newArtboard = new sketch__WEBPACK_IMPORTED_MODULE_0___default.a.Artboard({
+    name: "iterationOf." + shapeName,
+    parent: sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument().selectedPage,
+    frame: new sketch__WEBPACK_IMPORTED_MODULE_0___default.a.Rectangle(newX, newY, newWidth, newHeight)
+  });
+  return newArtboard;
 }
 
 function initiateGUI() {
@@ -2460,46 +2558,124 @@ function initiateGUI() {
   //browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
 }
 
-function listenToMutationEvents() {
-  browserWindow.webContents.on('webviewMessage', function (s) {
-    console.log(s);
-    var selectedParameters = JSON.parse(s);
-    var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument();
+function duplicateOriginalLayerInNewArtboard(originalShape, parentArtboard, header) {
+  var tmpShape = originalShape.duplicate();
+  tmpShape.mutationParent = originalShape.id; //tmpShape.flow.properties = [originalShape.id]
+
+  console.log(tmpShape);
+  tmpShape.parent = parentArtboard;
+  tmpShape.frame.y = yOffset * 2 + header.frame.height;
+  tmpShape.frame.x = (parentArtboard.frame.width - tmpShape.frame.width) / 2;
+  return tmpShape;
+}
+
+function addDescrption(parentArtboard, text, cordX, cordY) {
+  var myText = new sketch__WEBPACK_IMPORTED_MODULE_0___default.a.Text({
+    text: text
+  }); //text.font = Roboto
+
+  myText.parent = parentArtboard;
+  myText.systemFontSize = 14;
+  myText.frame.x = cordX;
+  myText.frame.y = cordY;
+  myText.style.opacity = 0.7;
+  return myText;
+}
+
+function listenToSwapEvents() {
+  browserWindow.webContents.on('swapMessage', function () {
+    //let document = sketch.getSelectedDocument()
     var selectedLayers = document.selectedLayers;
 
     if (!selectedLayers.isEmpty) {
-      var groupedLayer = selectedLayers.layers.filter(function (layer) {
-        return layer.type === 'Group';
-      });
+      var obj = selectedLayers.layers[0];
+      console.log(obj);
+      console.log("This is my mutationParent");
+      console.log(obj.mutationParent);
+      var sObj = obj.sketchObject;
+      console.log(obj);
+      var originalObj = document.getLayerWithID(obj.mutationParent);
 
-      if (groupedLayer.length > 0) {
-        console.log("Grouped Layer");
-        console.log(groupedLayer);
-        var shape = groupedLayer[0].layers.filter(function (layer) {
-          return layer.type === 'ShapePath';
-        });
-        console.log(shape.length);
-        duplicateNewLayers(shape[0], selectedParameters, 8);
-      } else {
-        console.log("Not a grouped Layer");
-        var _shape = selectedLayers.layers[0];
-
-        if (_shape.type === 'ShapePath') {
-          duplicateNewLayers(_shape, selectedParameters, 8);
-        }
-      } //let shape = selectedLayers.layers[0]
-      //duplicateNewLayers(shape,8)
-
-    } else {
-      console.log("Whaat");
+      if (originalObj) {
+        console.log("Did I reach this..?");
+        originalObj.style = obj.style;
+        var sOriginalObj = originalObj.sketchObject;
+        sOriginalObj.setCornerRadiusFloat(sObj.cornerRadiusFloat());
+      }
     }
   });
+}
+
+function listenToMutationEvents() {
+  browserWindow.webContents.on('mutateMessage', function (s) {
+    var selectedParameters = JSON.parse(s);
+    document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument();
+    var selectedLayers = document.selectedLayers;
+
+    if (!selectedLayers.isEmpty) {
+      //TODO: See if this is the correct approach or not
+      var layers = getShape(selectedLayers);
+
+      if (layers !== null) {
+        var artboardProperties = createArtboardTemplate(layers.layers[0]);
+        var originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(layers.layers[0], artboardProperties.parentArtboard, artboardProperties.originalText);
+        duplicateNewLayers(originalShapeInNewArtboard, selectedParameters, amountCopies, artboardProperties.mutationText.frame);
+      } else {
+        sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("No layers found");
+      }
+    } else {
+      sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("BillUI: No selected layer. Select a layer in order to mutate");
+    }
+  });
+}
+
+function getShape(selectedLayers) {
+  var layers = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_5__["getGroups"])(selectedLayers.layers);
+
+  if (layers.length > 0) {
+    //THIS IS A GROUP
+    return {
+      "layers": layers,
+      "type": layers[0].type
+    };
+  } else {
+    layers = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_5__["getShapePaths"])(selectedLayers.layers);
+
+    if (layers.length > 0) {
+      return {
+        "layers": layers,
+        "type": layers[0].type // THIS IS A SHAPEPATH
+        //sketch.UI.message("This is a shapepath")
+
+      };
+    }
+  }
+
+  return null;
+}
+
+function createArtboardTemplate(obj) {
+  var artboardFrameProperties = obj.parent.frame;
+  var parentArtboard = createNewArtboard(artboardFrameProperties, obj.frame, obj.name);
+  var originalText = addDescrption(parentArtboard, 'Original', xOffset, yOffset);
+  var mutationText = addDescrption(parentArtboard, 'Mutation', xOffset, obj.frame.height + 3 * yOffset + originalText.frame.height);
+  parentArtboard.frame.height = parentArtboard.frame.height + originalText.frame.height + mutationText.frame.height + 3 * yOffset;
+  return {
+    "parentArtboard": parentArtboard,
+    "originalText": originalText,
+    "mutationText": mutationText
+  };
+}
+
+function todoMoveThisIntoSomethingLater() {
+  var originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(shape, parentArtboard, originalText);
 } //This is our main function that triggers when we start the file
 
 
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   initiateGUI();
   listenToMutationEvents();
+  listenToSwapEvents();
 });
 
 /***/ }),
@@ -2508,18 +2684,15 @@ function listenToMutationEvents() {
 /*!*****************************!*\
   !*** ./src/mutationUtil.js ***!
   \*****************************/
-/*! exports provided: getLowestMutation, getHighestMutation, mutate */
+/*! exports provided: coinToss, mutate */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLowestMutation", function() { return getLowestMutation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getHighestMutation", function() { return getHighestMutation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "coinToss", function() { return coinToss; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mutate", function() { return mutate; });
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./src/constants.js");
-
-function getLowestMutation(currentIndex, limit) {
-  var fraction = Math.floor(currentIndex - limit * _constants__WEBPACK_IMPORTED_MODULE_0__["MUTATION"]);
+function getLowestMutation(currentIndex, limit, mutationRate) {
+  var fraction = Math.floor(currentIndex - limit * mutationRate);
 
   if (fraction < 0) {
     fraction = 0;
@@ -2527,8 +2700,9 @@ function getLowestMutation(currentIndex, limit) {
 
   return fraction;
 }
-function getHighestMutation(currentIndex, limit) {
-  var fraction = Math.floor(currentIndex + limit * _constants__WEBPACK_IMPORTED_MODULE_0__["MUTATION"]);
+
+function getHighestMutation(currentIndex, limit, mutationRate) {
+  var fraction = Math.floor(currentIndex + limit * mutationRate);
 
   if (fraction > limit) {
     fraction = limit;
@@ -2536,9 +2710,27 @@ function getHighestMutation(currentIndex, limit) {
 
   return fraction;
 }
-function mutate(low, high) {
+
+function mutateValue(low, high) {
   var item = Math.floor(Math.random() * (high - low) + low);
   return item;
+}
+
+function coinToss(prob) {
+  var flipp = mutateValue(0, 100);
+
+  if (flipp <= 100 * prob) {
+    return true;
+  } else {
+    return false;
+  }
+}
+function mutate(curValue, mutationRate, limit, prob) {
+  if (coinToss(prob)) {
+    var low = getLowestMutation(curValue, limit, mutationRate);
+    var high = getHighestMutation(curValue, limit, mutationRate);
+    return mutateValue(low, high);
+  }
 }
 
 /***/ }),
@@ -2554,12 +2746,13 @@ function mutate(low, high) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mutateCornerRadius", function() { return mutateCornerRadius; });
 /* harmony import */ var _mutationUtil__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./mutationUtil */ "./src/mutationUtil.js");
+ //mutate(curValue, mutationRate, limit, prob)
 
+var cornerRadiusProb = 0.9;
+var cornerRadiusRate = 1;
 function mutateCornerRadius(obj) {
   var sObj = obj.sketchObject;
-  var low = Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_0__["getLowestMutation"])(sObj.cornerRadiusFloat(), sObj.maximumAllowedRadius());
-  var high = Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_0__["getHighestMutation"])(sObj.cornerRadiusFloat(), sObj.maximumAllowedRadius());
-  sObj.setCornerRadiusFloat(Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_0__["mutate"])(low, high));
+  sObj.setCornerRadiusFloat(Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_0__["mutate"])(sObj.cornerRadiusFloat(), cornerRadiusRate, sObj.maximumAllowedRadius(), cornerRadiusProb));
 }
 
 /***/ }),
@@ -2578,14 +2771,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mutateShadow", function() { return mutateShadow; });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./src/constants.js");
 /* harmony import */ var _colorUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./colorUtil */ "./src/colorUtil.js");
+/* harmony import */ var _mutationUtil__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mutationUtil */ "./src/mutationUtil.js");
 
 
-var enableShadow = "{ blur: 4, x: 0, y: 2, spread: 0, color: '#00000000', enabled: true }";
+ //mutate(curValue, mutationRate, limit, prob)
+
+var borderThicknessRate = 0.5;
+var borderThicknessProb = 0.7;
+var shadowRate = 0.2;
 function mutateBorderColor(obj) {
   //console.log('inside mutateBorderColor')
-  if (obj.style.borders[0] !== undefined) {
-    var bColor = Object(_colorUtil__WEBPACK_IMPORTED_MODULE_1__["mutateColor"])(obj.style.borders[0].color);
-    obj.style.borders[0].color = bColor;
+  if (obj !== undefined) {
+    Object(_colorUtil__WEBPACK_IMPORTED_MODULE_1__["mutateColor"])(obj);
   }
 }
 function mutateBorderThickness(obj) {
@@ -2593,50 +2790,42 @@ function mutateBorderThickness(obj) {
   if (obj.style.borders[0] !== undefined) {
     var thickness = obj.style.borders[0].thickness;
     var limit = getSmallestWidth(obj);
-    var newBorderWidth = mutate(getLowestMutationBorderWidth(thickness, limit), getHighestMutationBorderWidth(thickness, limit));
+    var newBorderWidth = Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_2__["mutate"])(thickness, borderThicknessRate, limit, borderThicknessProb);
     obj.style.borders[0].thickness = newBorderWidth;
   }
-} //TODO: Clear when disable shadow!
-
+}
 function mutateShadow(obj) {
-  //console.log('inside mutateShadow')
-  //console.log(obj.style.sketchObject)
   var shape = obj.style.sketchObject;
 
-  if (shape.hasEnabledShadow() === 0 || shape.hasEnabledShadow() === undefined) {
-    var shouldEnable = mutate(0, 100);
-
-    if (shouldEnable <= 50) {
-      shape.addStylePartOfType(2);
+  if (shape.hasEnabledShadow() === 0) {
+    if (Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_2__["coinToss"])(0.5)) {
+      if (obj.style.shadows[0] !== undefined) {
+        obj.style.shadows[0].enabled = true;
+      } else {
+        shape.addStylePartOfType(2);
+      }
     }
   } else {
-    //console.log('FUCKING FILLED')
-    var _shouldEnable = mutate(0, 100);
-
-    if (_shouldEnable <= 100 * _constants__WEBPACK_IMPORTED_MODULE_0__["MUTATION"]) {
-      //console.log('Disable Shadow')
+    if (Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_2__["coinToss"])(shadowRate)) {
       shape.disableAllShadows();
     } else {
-      //console.log('Mutate Shadow')
       var shadow = obj.style.shadows[0];
-      setShadowColor(shadow);
       setOneUnitRandomness(shadow, 'blur', shadow.blur);
       setOneUnitRandomness(shadow, 'x', shadow.x);
       setOneUnitRandomness(shadow, 'y', shadow.y);
       setOneUnitRandomness(shadow, 'spread', shadow.spread);
+      setShadowColor(shadow);
     }
   }
 }
 
 function setOneUnitRandomness(obj, type, prop) {
   //console.log(prop)
-  if (mutate(0, 100) <= 100 * _constants__WEBPACK_IMPORTED_MODULE_0__["MUTATION"]) {
+  if (Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_2__["coinToss"])(shadowRate)) {
     if (prop === 0) {
       prop = 1;
     } else {
-      var dice = mutate(0, 100);
-
-      if (dice <= 50) {
+      if (Object(_mutationUtil__WEBPACK_IMPORTED_MODULE_2__["coinToss"])(0.5)) {
         prop = prop - 1;
       } else {
         prop = prop + 1;
@@ -2668,7 +2857,7 @@ function setOneUnitRandomness(obj, type, prop) {
 }
 
 function setShadowColor(s) {
-  var temp = Object(_colorUtil__WEBPACK_IMPORTED_MODULE_1__["mutateColor"])(s.color); //console.log(temp)
+  var temp = Object(_colorUtil__WEBPACK_IMPORTED_MODULE_1__["mutateShadowColor"])(s); //console.log(temp)
 
   temp = temp.substring(0, temp.length - 2);
   temp = temp + '80'; //console.log(temp)
@@ -2684,31 +2873,6 @@ function getSmallestWidth(obj) {
   }
 }
 
-function getLowestMutationBorderWidth(borderWidthFraction, limit) {
-  var fraction = Math.floor(borderWidthFraction - limit * _constants__WEBPACK_IMPORTED_MODULE_0__["MUTATION"]);
-
-  if (fraction < 0) {
-    fraction = 0;
-  }
-
-  return fraction;
-}
-
-function getHighestMutationBorderWidth(borderWidthFraction, limit) {
-  var fraction = Math.floor(borderWidthFraction + limit * _constants__WEBPACK_IMPORTED_MODULE_0__["MUTATION"]);
-
-  if (fraction > limit) {
-    fraction = limit;
-  }
-
-  return fraction;
-}
-
-function mutate(low, high) {
-  var item = Math.floor(Math.random() * (high - low) + low);
-  return item;
-}
-
 /***/ }),
 
 /***/ "./src/webview/main-screen.html":
@@ -2718,7 +2882,7 @@ function mutate(low, high) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + context.plugin.urlForResourceNamed("_webpack_resources/7cb9e7d8a4fc1f2f86a19ecf9d62fe69.html").path();
+module.exports = "file://" + context.plugin.urlForResourceNamed("_webpack_resources/91e0ae4dd6172719a7dcfab4d009e080.html").path();
 
 /***/ }),
 
