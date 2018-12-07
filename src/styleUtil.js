@@ -1,17 +1,18 @@
-import {MUTATION} from './constants'
+import {
+  MUTATION,
+  BORDER_THICKNESS_RATE,
+  BORDER_THICKNESS_PROB,
+  SHADOW_RATE,
+  BORDER_COLOR_PROB
+} from './constants'
 import {mutateColor, mutateShadowColor} from './colorUtil'
 import {mutate, coinToss} from './mutationUtil'
-//mutate(curValue, mutationRate, limit, prob)
-
-const borderThicknessRate = 0.5
-const borderThicknessProb = 0.7
-
-const shadowRate = 0.2
 
 export function mutateBorderColor(obj){
-  //console.log('inside mutateBorderColor')
-  if(obj !== undefined){
-    mutateColor(obj)
+  if(coinToss(BORDER_COLOR_PROB)){
+    if(obj !== undefined){
+      mutateColor(obj)
+    }
   }
 }
 
@@ -20,7 +21,7 @@ export function mutateBorderThickness(obj){
   if(obj.style.borders[0] !== undefined){
     let thickness = obj.style.borders[0].thickness
     let limit = getSmallestWidth(obj)
-    let newBorderWidth = mutate(thickness, borderThicknessRate, limit, borderThicknessProb)
+    let newBorderWidth = mutate(thickness, BORDER_THICKNESS_RATE, limit, BORDER_THICKNESS_PROB)
     obj.style.borders[0].thickness = newBorderWidth
   }
 }
@@ -36,7 +37,7 @@ export function mutateShadow(obj){
       }
     }
   }else {
-    if(coinToss(shadowRate)){
+    if(coinToss(SHADOW_RATE)){
       shape.disableAllShadows()
     }else {
       let shadow = obj.style.shadows[0]
@@ -51,7 +52,7 @@ export function mutateShadow(obj){
 
 function setOneUnitRandomness(obj, type, prop){
   //console.log(prop)
-  if(coinToss(shadowRate)){
+  if(coinToss(SHADOW_RATE)){
     if(prop === 0) {
       prop = 1
     } else {
@@ -84,12 +85,9 @@ function setOneUnitRandomness(obj, type, prop){
 
 function setShadowColor(s){
   let temp = mutateShadowColor(s)
-  //console.log(temp)
   temp = temp.substring(0, temp.length - 2)
   temp = temp + '80'
-  //console.log(temp)
   s.color = temp
-  //console.log(s.color)
 }
 
 function getSmallestWidth(obj){
