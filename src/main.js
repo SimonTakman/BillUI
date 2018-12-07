@@ -67,7 +67,7 @@ function createNewArtboard(artboardFrame, shapeFrame, shapeName){
   let newX = artboardFrame.width + artboardFrame.x + 50
   let newY = artboardFrame.y
   let newWidth = shapeFrame.width + 30
-  let newHeight = (shapeFrame.height * (AMOUNT_COPIES+1)) +  (Y_OFFSET * (AMOUNT_COPIES+2))
+  let newHeight = (shapeFrame.height * (AMOUNT_COPIES+1)) + Y_OFFSET + (Y_OFFSET * (AMOUNT_COPIES+2))
   //TODO: Think of what name it should have
   let newArtboard = new sketch.Artboard({
     name: "iterationOf."+shapeName,
@@ -98,12 +98,12 @@ function initiateGUI(){
 function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard, header){
   let tmpShape = originalShape.duplicate()
   tmpShape.parent = parentArtboard
-  tmpShape.frame.y = (Y_OFFSET * 2) + header.frame.height
+  tmpShape.frame.y = (Y_OFFSET * 3) + header.frame.height
   tmpShape.frame.x = (parentArtboard.frame.width - tmpShape.frame.width)/2
   return tmpShape
 }
 
-function addDescrption(parentArtboard, text, cordX, cordY) {
+function addDescrption(parentArtboard, text, cordX, cordY, opacity) {
   let myText = new sketch.Text({
     text: text
   })
@@ -112,7 +112,7 @@ function addDescrption(parentArtboard, text, cordX, cordY) {
   myText.systemFontSize = 14
   myText.frame.x = cordX
   myText.frame.y = cordY
-  myText.style.opacity = 0.7
+  myText.style.opacity = opacity
   return myText
 }
 
@@ -158,8 +158,9 @@ function getShape(selectedLayers){
 function createArtboardTemplate(obj){
   let artboardFrameProperties = obj.parent.frame
   let parentArtboard = createNewArtboard(artboardFrameProperties, obj.frame, obj.name)
-  let originalText = addDescrption(parentArtboard, 'Original', X_OFFSET, Y_OFFSET)
-  let mutationText = addDescrption(parentArtboard, 'Mutation', X_OFFSET, obj.frame.height + (3 * Y_OFFSET) + originalText.frame.height)
+  let originalText = addDescrption(parentArtboard, 'Original', X_OFFSET, Y_OFFSET, 0.7)
+  let id = addDescrption(parentArtboard, 'ABS-CCH-728-938-192-PNX-XHP', X_OFFSET, Y_OFFSET + ( Y_OFFSET / 2 ) + originalText.frame.height, 0.2)
+  let mutationText = addDescrption(parentArtboard, 'Mutation', X_OFFSET, obj.frame.height + (3 * Y_OFFSET) + originalText.frame.height + id.frame.height, 0.7)
   parentArtboard.frame.height = parentArtboard.frame.height + originalText.frame.height + mutationText.frame.height + (3 * Y_OFFSET)
   return {"parentArtboard": parentArtboard, "originalText": originalText, "mutationText": mutationText}
 }
