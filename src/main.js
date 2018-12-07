@@ -16,6 +16,8 @@ import {
 
 let browserWindow;
 // documentation: https://developer.sketchapp.com/reference/api/
+// Action api: https://github.com/bomberstudios/sketch-action-api-tester
+// Action example: https://github.com/BohemianCoding/SketchAPI/blob/develop/examples/selection-changed/src/selection-changed.js
 
 
 function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFrame){
