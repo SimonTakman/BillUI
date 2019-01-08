@@ -21,20 +21,35 @@ export default function(){
 export function mutateWithParameters(selectedParameters){
   let document = sketch.getSelectedDocument()
   let selectedLayers = document.selectedLayers
-  //console.log(selectedLayers.layers)
-  //let symbolmaster = document.getSymbolMasterWithID(selectedLayers.layers[0].symbolID)
-  //console.log(symbolmaster)
     if(!selectedLayers.isEmpty) {
       let layers = getShape(selectedLayers)
       if(layers !== null){
-        let artboardProperties = createArtboardTemplate(layers.layers[0])
-        let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(layers.layers[0], artboardProperties.parentArtboard, artboardProperties.originalText)
-        duplicateNewLayers(originalShapeInNewArtboard, selectedParameters, AMOUNT_COPIES, artboardProperties.mutationText.frame)
+        createMutations(layers.layers[0], selectedParameters, null)
       } else {
-        //TODO: Here we can check if the type is symbol instance or not
-        sketch.UI.message("No layers found")
+        if(selectedLayers.layers[0].type === "SymbolInstance"){
+          let symbolmaster = document.getSymbolMasterWithID(selectedLayers.layers[0].symbolId)
+          if(symbolmaster){
+            console.log(symbolmaster)
+            createMutations(symbolmaster.layers[0], selectedParameters, null)
+            //TODO: Update element on the symbolmaster
+          }
+        } else {
+          sketch.UI.message("No layers found")
+        }
       }
     } else {
       sketch.UI.message("BillUI: No selected layer. Select a layer in order to mutate")
     }
+}
+
+function createMutations(layer, selectedParameters, symbolLayer){
+  let artboardProperties
+  if(symbolLayer){
+    artboardProperties = createArtboardTemplate(symbolLayer)
+  } else {
+    artboardProperties = createArtboardTemplate(layer)
+  }
+  
+  let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(layer, artboardProperties.parentArtboard, artboardProperties.originalText)
+  duplicateNewLayers(originalShapeInNewArtboard, selectedParameters, AMOUNT_COPIES, artboardProperties.mutationText.frame)
 }

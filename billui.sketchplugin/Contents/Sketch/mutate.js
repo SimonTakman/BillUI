@@ -2727,24 +2727,41 @@ __webpack_require__.r(__webpack_exports__);
 });
 function mutateWithParameters(selectedParameters) {
   var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument();
-  var selectedLayers = document.selectedLayers; //console.log(selectedLayers.layers)
-  //let symbolmaster = document.getSymbolMasterWithID(selectedLayers.layers[0].symbolID)
-  //console.log(symbolmaster)
+  var selectedLayers = document.selectedLayers;
 
   if (!selectedLayers.isEmpty) {
     var layers = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_3__["getShape"])(selectedLayers);
 
     if (layers !== null) {
-      var artboardProperties = Object(_main__WEBPACK_IMPORTED_MODULE_1__["createArtboardTemplate"])(layers.layers[0]);
-      var originalShapeInNewArtboard = Object(_main__WEBPACK_IMPORTED_MODULE_1__["duplicateOriginalLayerInNewArtboard"])(layers.layers[0], artboardProperties.parentArtboard, artboardProperties.originalText);
-      Object(_main__WEBPACK_IMPORTED_MODULE_1__["duplicateNewLayers"])(originalShapeInNewArtboard, selectedParameters, _constants__WEBPACK_IMPORTED_MODULE_2__["AMOUNT_COPIES"], artboardProperties.mutationText.frame);
+      createMutations(layers.layers[0], selectedParameters, null);
     } else {
-      //TODO: Here we can check if the type is symbol instance or not
-      sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("No layers found");
+      if (selectedLayers.layers[0].type === "SymbolInstance") {
+        var symbolmaster = document.getSymbolMasterWithID(selectedLayers.layers[0].symbolId);
+
+        if (symbolmaster) {
+          console.log(symbolmaster);
+          createMutations(symbolmaster.layers[0], selectedParameters, null); //TODO: Update element on the symbolmaster
+        }
+      } else {
+        sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("No layers found");
+      }
     }
   } else {
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("BillUI: No selected layer. Select a layer in order to mutate");
   }
+}
+
+function createMutations(layer, selectedParameters, symbolLayer) {
+  var artboardProperties;
+
+  if (symbolLayer) {
+    artboardProperties = Object(_main__WEBPACK_IMPORTED_MODULE_1__["createArtboardTemplate"])(symbolLayer);
+  } else {
+    artboardProperties = Object(_main__WEBPACK_IMPORTED_MODULE_1__["createArtboardTemplate"])(layer);
+  }
+
+  var originalShapeInNewArtboard = Object(_main__WEBPACK_IMPORTED_MODULE_1__["duplicateOriginalLayerInNewArtboard"])(layer, artboardProperties.parentArtboard, artboardProperties.originalText);
+  Object(_main__WEBPACK_IMPORTED_MODULE_1__["duplicateNewLayers"])(originalShapeInNewArtboard, selectedParameters, _constants__WEBPACK_IMPORTED_MODULE_2__["AMOUNT_COPIES"], artboardProperties.mutationText.frame);
 }
 
 /***/ }),
