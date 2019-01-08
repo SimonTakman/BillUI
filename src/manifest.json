@@ -1,12 +1,12 @@
 {
   "compatibleVersion": 3,
   "bundleVersion": 1,
-  "description":"This is a cool plugin",
+  "description": "Interactiv artificial evolutionary tool in order to help you come up with design suggestions that are similar to your initial design.",
   "version": "1.0",
   "icon": "icon.png",
   "commands": [
     {
-      "name": "Run BillUI",
+      "name": "Open GUI",
       "identifier": "UI",
       "shortcut": "ctrl shift b",
       "script": "./main.js"
