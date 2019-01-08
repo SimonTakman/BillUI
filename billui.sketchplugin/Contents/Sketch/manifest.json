@@ -14,13 +14,20 @@
       "identifier": "mutate",
       "shortcut": "ctrl shift m",
       "script": "mutate.js"
+    },
+    {
+      "name": "Swap",
+      "identifier": "swap",
+      "shortcut": "ctrl shift s",
+      "script": "swap.js"
     }
   ],
   "menu": {
     "title": "BillUI",
     "items": [
       "UI",
-      "mutate"
+      "mutate",
+      "swap"
     ]
   },
   "version": "0.1.0",

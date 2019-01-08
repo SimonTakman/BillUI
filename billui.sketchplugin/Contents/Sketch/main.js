@@ -2526,14 +2526,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createArtboardTemplate", function() { return createArtboardTemplate; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _mutate__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mutate */ "./src/mutate.js");
-/* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sketch-module-web-view */ "./node_modules/sketch-module-web-view/lib/index.js");
-/* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _colorUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./colorUtil */ "./src/colorUtil.js");
-/* harmony import */ var _styleUtil__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./styleUtil */ "./src/styleUtil.js");
-/* harmony import */ var _shapeUtil__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./shapeUtil */ "./src/shapeUtil.js");
-/* harmony import */ var _layerUtil__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./layerUtil */ "./src/layerUtil.js");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./constants */ "./src/constants.js");
+/* harmony import */ var _swap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./swap */ "./src/swap.js");
+/* harmony import */ var _mutate__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mutate */ "./src/mutate.js");
+/* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sketch-module-web-view */ "./node_modules/sketch-module-web-view/lib/index.js");
+/* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _colorUtil__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./colorUtil */ "./src/colorUtil.js");
+/* harmony import */ var _styleUtil__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./styleUtil */ "./src/styleUtil.js");
+/* harmony import */ var _shapeUtil__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./shapeUtil */ "./src/shapeUtil.js");
+/* harmony import */ var _layerUtil__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./layerUtil */ "./src/layerUtil.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./constants */ "./src/constants.js");
 
 
 
@@ -2560,7 +2561,7 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFra
       });
 
       if (shapedLayers.length > 0) {
-        tmpObj.frame.y = mutationFrame.y + mutationFrame.height + _constants__WEBPACK_IMPORTED_MODULE_7__["Y_OFFSET"] + i * (tmpObj.frame.height + _constants__WEBPACK_IMPORTED_MODULE_7__["Y_OFFSET"]);
+        tmpObj.frame.y = mutationFrame.y + mutationFrame.height + _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"] + i * (tmpObj.frame.height + _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"]);
         tmpObj.name = tmpObj.name + "." + i;
 
         if (textLayers.length > 0) {
@@ -2571,28 +2572,28 @@ function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFra
         tmpObj = shapedLayers[0];
       }
     } else {
-      tmpObj.frame.y = mutationFrame.y + mutationFrame.height + _constants__WEBPACK_IMPORTED_MODULE_7__["Y_OFFSET"] + i * (tmpObj.frame.height + _constants__WEBPACK_IMPORTED_MODULE_7__["Y_OFFSET"]);
+      tmpObj.frame.y = mutationFrame.y + mutationFrame.height + _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"] + i * (tmpObj.frame.height + _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"]);
       tmpObj.name = tmpObj.name + "." + i;
     }
 
     if (selectedProperties.radious) {
-      Object(_shapeUtil__WEBPACK_IMPORTED_MODULE_5__["mutateCornerRadius"])(tmpObj);
+      Object(_shapeUtil__WEBPACK_IMPORTED_MODULE_6__["mutateCornerRadius"])(tmpObj);
     }
 
     if (selectedProperties.fillsColor) {
-      Object(_colorUtil__WEBPACK_IMPORTED_MODULE_3__["mutateColor"])(tmpObj.style.fills[0]);
+      Object(_colorUtil__WEBPACK_IMPORTED_MODULE_4__["mutateColor"])(tmpObj.style.fills[0]);
     }
 
     if (selectedProperties.bordersColor) {
-      Object(_styleUtil__WEBPACK_IMPORTED_MODULE_4__["mutateBorderColor"])(tmpObj.style.borders[0]);
+      Object(_styleUtil__WEBPACK_IMPORTED_MODULE_5__["mutateBorderColor"])(tmpObj.style.borders[0]);
     }
 
     if (selectedProperties.borderWidth) {
-      Object(_styleUtil__WEBPACK_IMPORTED_MODULE_4__["mutateBorderThickness"])(tmpObj);
+      Object(_styleUtil__WEBPACK_IMPORTED_MODULE_5__["mutateBorderThickness"])(tmpObj);
     }
 
     if (selectedProperties.shadow) {
-      Object(_styleUtil__WEBPACK_IMPORTED_MODULE_4__["mutateShadow"])(tmpObj);
+      Object(_styleUtil__WEBPACK_IMPORTED_MODULE_5__["mutateShadow"])(tmpObj);
     }
   }
 } //https://github.com/delighted/sketch-duplicate-to-new-artboard/blob/master/src/sketch-duplicate-to-new-artboard.js
@@ -2602,7 +2603,7 @@ function createNewArtboard(artboardFrame, shapeFrame, shapeName) {
   var newX = artboardFrame.width + artboardFrame.x + 50;
   var newY = artboardFrame.y;
   var newWidth = shapeFrame.width + 30;
-  var newHeight = shapeFrame.height * (_constants__WEBPACK_IMPORTED_MODULE_7__["AMOUNT_COPIES"] + 1) + _constants__WEBPACK_IMPORTED_MODULE_7__["Y_OFFSET"] * (_constants__WEBPACK_IMPORTED_MODULE_7__["AMOUNT_COPIES"] + 2); //TODO: Think of what name it should have
+  var newHeight = shapeFrame.height * (_constants__WEBPACK_IMPORTED_MODULE_8__["AMOUNT_COPIES"] + 1) + _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"] * (_constants__WEBPACK_IMPORTED_MODULE_8__["AMOUNT_COPIES"] + 2); //TODO: Think of what name it should have
 
   var newArtboard = new sketch__WEBPACK_IMPORTED_MODULE_0___default.a.Artboard({
     name: "iterationOf." + shapeName,
@@ -2622,7 +2623,7 @@ function initiateGUI() {
     height: 400,
     backgroundColor: "#F2F2F2"
   };
-  browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_2___default.a(options);
+  browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_3___default.a(options);
   browserWindow.loadURL(__webpack_require__(/*! ./webview/main-screen.html */ "./src/webview/main-screen.html")); //In order to update GUI, use the method below
   //browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
 }
@@ -2630,7 +2631,7 @@ function initiateGUI() {
 function duplicateOriginalLayerInNewArtboard(originalShape, parentArtboard, header) {
   var tmpShape = originalShape.duplicate();
   tmpShape.parent = parentArtboard;
-  tmpShape.frame.y = _constants__WEBPACK_IMPORTED_MODULE_7__["Y_OFFSET"] * 2 + header.frame.height;
+  tmpShape.frame.y = _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"] * 2 + header.frame.height;
   tmpShape.frame.x = (parentArtboard.frame.width - tmpShape.frame.width) / 2;
   return tmpShape;
 }
@@ -2650,47 +2651,31 @@ function addDescrption(parentArtboard, text, cordX, cordY, opacity, fontSize) {
 
 function listenToSwapEvents() {
   browserWindow.webContents.on('swapMessage', function () {
-    var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument();
-    var selectedLayers = document.selectedLayers;
-
-    if (!selectedLayers.isEmpty) {
-      var obj = selectedLayers.layers[0];
-      var artboard = obj.parent;
-      var textLayers = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_6__["getText"])(artboard.layers);
-      var sortedTextLayer = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_6__["sortTextDescendingOrder"])(textLayers);
-      var sObj = obj.sketchObject;
-      var originalObj = document.getLayerWithID(sortedTextLayer[0].name);
-
-      if (originalObj) {
-        originalObj.style = obj.style;
-        var sOriginalObj = originalObj.sketchObject;
-        sOriginalObj.setCornerRadiusFloat(sObj.cornerRadiusFloat());
-      }
-    }
+    Object(_swap__WEBPACK_IMPORTED_MODULE_1__["default"])();
   });
 }
 
 function listenToMutationEvents() {
   browserWindow.webContents.on('mutateMessage', function (s) {
-    Object(_mutate__WEBPACK_IMPORTED_MODULE_1__["mutateWithParameters"])(JSON.parse(s));
+    Object(_mutate__WEBPACK_IMPORTED_MODULE_2__["mutateWithParameters"])(JSON.parse(s));
   });
 }
 
 function createArtboardTemplate(obj) {
   var artboardFrameProperties = obj.parent.frame;
   var parentArtboard = createNewArtboard(artboardFrameProperties, obj.frame, obj.name);
-  var originalText = addDescrption(parentArtboard, 'Original', _constants__WEBPACK_IMPORTED_MODULE_7__["X_OFFSET"], _constants__WEBPACK_IMPORTED_MODULE_7__["Y_OFFSET"], 0.7, 14);
+  var originalText = addDescrption(parentArtboard, 'Original', _constants__WEBPACK_IMPORTED_MODULE_8__["X_OFFSET"], _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"], 0.7, 14);
 
-  if (Object(_layerUtil__WEBPACK_IMPORTED_MODULE_6__["getText"])(obj.parent.layers).length > 2 && Object(_layerUtil__WEBPACK_IMPORTED_MODULE_6__["hasTextElementByValue"])(obj.parent.layers, "Mutation")) {
-    var textLayers = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_6__["getText"])(obj.parent.layers);
-    var sortedTextLayer = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_6__["sortTextDescendingOrder"])(textLayers);
-    addDescrption(parentArtboard, sortedTextLayer[0].name, _constants__WEBPACK_IMPORTED_MODULE_7__["X_OFFSET"], _constants__WEBPACK_IMPORTED_MODULE_7__["Y_OFFSET"] + 1 + originalText.frame.height, 0.2, 2);
+  if (Object(_layerUtil__WEBPACK_IMPORTED_MODULE_7__["getText"])(obj.parent.layers).length > 2 && Object(_layerUtil__WEBPACK_IMPORTED_MODULE_7__["hasTextElementByValue"])(obj.parent.layers, "Mutation")) {
+    var textLayers = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_7__["getText"])(obj.parent.layers);
+    var sortedTextLayer = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_7__["sortTextDescendingOrder"])(textLayers);
+    addDescrption(parentArtboard, sortedTextLayer[0].name, _constants__WEBPACK_IMPORTED_MODULE_8__["X_OFFSET"], _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"] + 1 + originalText.frame.height, 0.2, 2);
   } else {
-    addDescrption(parentArtboard, obj.id, _constants__WEBPACK_IMPORTED_MODULE_7__["X_OFFSET"], _constants__WEBPACK_IMPORTED_MODULE_7__["Y_OFFSET"] + 1 + originalText.frame.height, 0.2, 2);
+    addDescrption(parentArtboard, obj.id, _constants__WEBPACK_IMPORTED_MODULE_8__["X_OFFSET"], _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"] + 1 + originalText.frame.height, 0.2, 2);
   }
 
-  var mutationText = addDescrption(parentArtboard, 'Mutation', _constants__WEBPACK_IMPORTED_MODULE_7__["X_OFFSET"], obj.frame.height + 3 * _constants__WEBPACK_IMPORTED_MODULE_7__["Y_OFFSET"] + originalText.frame.height, 0.7, 14);
-  parentArtboard.frame.height = parentArtboard.frame.height + originalText.frame.height + mutationText.frame.height + 3 * _constants__WEBPACK_IMPORTED_MODULE_7__["Y_OFFSET"];
+  var mutationText = addDescrption(parentArtboard, 'Mutation', _constants__WEBPACK_IMPORTED_MODULE_8__["X_OFFSET"], obj.frame.height + 3 * _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"] + originalText.frame.height, 0.7, 14);
+  parentArtboard.frame.height = parentArtboard.frame.height + originalText.frame.height + mutationText.frame.height + 3 * _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"];
   return {
     "parentArtboard": parentArtboard,
     "originalText": originalText,
@@ -2947,6 +2932,42 @@ function getSmallestWidth(obj) {
     return Math.floor(obj.frame.height / 2);
   }
 }
+
+/***/ }),
+
+/***/ "./src/swap.js":
+/*!*********************!*\
+  !*** ./src/swap.js ***!
+  \*********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _layerUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./layerUtil */ "./src/layerUtil.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function () {
+  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument();
+  var selectedLayers = document.selectedLayers;
+
+  if (!selectedLayers.isEmpty) {
+    var obj = selectedLayers.layers[0];
+    var artboard = obj.parent;
+    var textLayers = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_1__["getText"])(artboard.layers);
+    var sortedTextLayer = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_1__["sortTextDescendingOrder"])(textLayers);
+    var sObj = obj.sketchObject;
+    var originalObj = document.getLayerWithID(sortedTextLayer[0].name);
+
+    if (originalObj) {
+      originalObj.style = obj.style;
+      var sOriginalObj = originalObj.sketchObject;
+      sOriginalObj.setCornerRadiusFloat(sObj.cornerRadiusFloat());
+    }
+  }
+});
 
 /***/ }),
 

@@ -1,5 +1,5 @@
 import sketch from 'sketch'
-import mutate from './mutate'
+import swap from './swap'
 import {mutateWithParameters} from './mutate'
 import BrowserWindow from 'sketch-module-web-view'
 import {mutateColor} from './colorUtil'
@@ -123,21 +123,7 @@ function addDescrption(parentArtboard, text, cordX, cordY, opacity, fontSize) {
 
 function listenToSwapEvents(){
   browserWindow.webContents.on('swapMessage',function(){
-    let document = sketch.getSelectedDocument()
-    let selectedLayers = document.selectedLayers
-    if(!selectedLayers.isEmpty){
-      let obj = selectedLayers.layers[0]
-      let artboard = obj.parent
-      let textLayers = getText(artboard.layers)
-      let sortedTextLayer = sortTextDescendingOrder(textLayers)
-      let sObj = obj.sketchObject
-      let originalObj = document.getLayerWithID(sortedTextLayer[0].name)
-      if(originalObj){ 
-        originalObj.style = obj.style
-        let sOriginalObj = originalObj.sketchObject
-        sOriginalObj.setCornerRadiusFloat(sObj.cornerRadiusFloat())
-      }
-    }
+    swap()
   })
 }
 
