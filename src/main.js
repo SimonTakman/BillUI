@@ -1,4 +1,6 @@
 import sketch from 'sketch'
+import swap from './swap'
+import {mutateWithParameters} from './mutate'
 import BrowserWindow from 'sketch-module-web-view'
 import {mutateColor} from './colorUtil'
 import {
@@ -25,8 +27,7 @@ let browserWindow
 // Action example: https://github.com/BohemianCoding/SketchAPI/blob/develop/examples/selection-changed/src/selection-changed.js
 
 
-function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFrame){
-
+export function duplicateNewLayers(obj, selectedProperties, numberOfLayers, mutationFrame){
   for(let i = 0; i < numberOfLayers; i++){
     let tmpObj = obj.duplicate()
     if (tmpObj.type === "Group") {
@@ -99,7 +100,7 @@ function initiateGUI(){
   //browserWindow.webContents.executeJavaScript('globalFunction("Yolo")')
 }
 
-function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard, header){
+export function duplicateOriginalLayerInNewArtboard(originalShape,parentArtboard, header){
   let tmpShape = originalShape.duplicate()
   tmpShape.parent = parentArtboard
   tmpShape.frame.y = (Y_OFFSET * 2) + header.frame.height
@@ -122,62 +123,17 @@ function addDescrption(parentArtboard, text, cordX, cordY, opacity, fontSize) {
 
 function listenToSwapEvents(){
   browserWindow.webContents.on('swapMessage',function(){
-    let document = sketch.getSelectedDocument()
-    let selectedLayers = document.selectedLayers
-    if(!selectedLayers.isEmpty){
-      let obj = selectedLayers.layers[0]
-      let artboard = obj.parent
-      let textLayers = getText(artboard.layers)
-      let sortedTextLayer = sortTextDescendingOrder(textLayers)
-      let sObj = obj.sketchObject
-      let originalObj = document.getLayerWithID(sortedTextLayer[0].name)
-      if(originalObj){ 
-        originalObj.style = obj.style
-        let sOriginalObj = originalObj.sketchObject
-        sOriginalObj.setCornerRadiusFloat(sObj.cornerRadiusFloat())
-      }
-    }
+    swap()
   })
 }
 
 function listenToMutationEvents(){
   browserWindow.webContents.on('mutateMessage', function(s){
-    let selectedParameters = JSON.parse(s)
-    let document = sketch.getSelectedDocument()
-    let selectedLayers = document.selectedLayers
-      if(!selectedLayers.isEmpty) {
-        //TODO: See if this is the correct approach or not
-        let layers = getShape(selectedLayers)
-        if(layers !== null){
-          let artboardProperties = createArtboardTemplate(layers.layers[0])
-          let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(layers.layers[0], artboardProperties.parentArtboard, artboardProperties.originalText)
-          duplicateNewLayers(originalShapeInNewArtboard, selectedParameters, AMOUNT_COPIES, artboardProperties.mutationText.frame)
-        } else {
-          sketch.UI.message("No layers found")
-        }
-      } else {
-        sketch.UI.message("BillUI: No selected layer. Select a layer in order to mutate")
-      }
+    mutateWithParameters(JSON.parse(s))
   })
 }
 
-function getShape(selectedLayers){
-  let layers = getGroups(selectedLayers.layers)
-  if (layers.length > 0){
-    //THIS IS A GROUP
-    return {"layers": layers, "type": layers[0].type}
-  } else {
-    layers = getShapePaths(selectedLayers.layers)
-    if(layers.length > 0){
-      return {"layers": layers, "type": layers[0].type}
-      // THIS IS A SHAPEPATH
-      //sketch.UI.message("This is a shapepath")
-    }
-  }
-  return null
-}
-
-function createArtboardTemplate(obj){
+export function createArtboardTemplate(obj){
   let artboardFrameProperties = obj.parent.frame
   let parentArtboard = createNewArtboard(artboardFrameProperties, obj.frame, obj.name)
   let originalText = addDescrption(parentArtboard, 'Original', X_OFFSET, Y_OFFSET, 0.7, 14)

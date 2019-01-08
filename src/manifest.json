@@ -5,14 +5,28 @@
   "commands": [
     {
       "name": "Run BillUI",
-      "identifier": "my-command-identifier",
+      "identifier": "UI",
+      "shortcut": "ctrl shift b",
       "script": "./main.js"
+    },
+    {
+      "name": "Mutate All",
+      "identifier": "mutate",
+      "shortcut": "ctrl shift m",
+      "script": "./mutate.js"
+    },
+    {
+      "name": "Swap",
+      "identifier": "swap",
+      "shortcut": "ctrl shift s",
+      "script": "./swap.js"
+
     }
   ],
   "menu": {
     "title": "BillUI",
     "items": [
-      "my-command-identifier"
+      "UI", "mutate", "swap"
     ]
   }
 }

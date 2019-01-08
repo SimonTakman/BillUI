@@ -37,3 +37,19 @@ export const getTextElementByValue = (layers, text) => {
 export const hasTextElementByValue = (layers, text) => {
   return layers.filter(layer => layer.name === text).length > 0 ? true : false
 }
+
+export function getShape(selectedLayers){
+  let layers = getGroups(selectedLayers.layers)
+  if (layers.length > 0){
+    //THIS IS A GROUP
+    return {"layers": layers, "type": layers[0].type}
+  } else {
+    layers = getShapePaths(selectedLayers.layers)
+    if(layers.length > 0){
+      return {"layers": layers, "type": layers[0].type}
+      // THIS IS A SHAPEPATH
+      //sketch.UI.message("This is a shapepath")
+    }
+  }
+  return null
+}
