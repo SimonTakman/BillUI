@@ -1,6 +1,8 @@
 {
   "compatibleVersion": 3,
   "bundleVersion": 1,
+  "description":"This is a cool plugin",
+  "version": "1.0",
   "icon": "icon.png",
   "commands": [
     {

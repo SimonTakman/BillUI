@@ -2727,7 +2727,9 @@ __webpack_require__.r(__webpack_exports__);
 });
 function mutateWithParameters(selectedParameters) {
   var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument();
-  var selectedLayers = document.selectedLayers;
+  var selectedLayers = document.selectedLayers; //console.log(selectedLayers.layers)
+  //let symbolmaster = document.getSymbolMasterWithID(selectedLayers.layers[0].symbolID)
+  //console.log(symbolmaster)
 
   if (!selectedLayers.isEmpty) {
     var layers = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_3__["getShape"])(selectedLayers);
@@ -2737,6 +2739,7 @@ function mutateWithParameters(selectedParameters) {
       var originalShapeInNewArtboard = Object(_main__WEBPACK_IMPORTED_MODULE_1__["duplicateOriginalLayerInNewArtboard"])(layers.layers[0], artboardProperties.parentArtboard, artboardProperties.originalText);
       Object(_main__WEBPACK_IMPORTED_MODULE_1__["duplicateNewLayers"])(originalShapeInNewArtboard, selectedParameters, _constants__WEBPACK_IMPORTED_MODULE_2__["AMOUNT_COPIES"], artboardProperties.mutationText.frame);
     } else {
+      //TODO: Here we can check if the type is symbol instance or not
       sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("No layers found");
     }
   } else {
@@ -2955,19 +2958,40 @@ __webpack_require__.r(__webpack_exports__);
 
   if (!selectedLayers.isEmpty) {
     var obj = selectedLayers.layers[0];
+    var shape;
+
+    if (obj.type === "Group") {
+      shape = getShapeFromGroup(obj);
+    }
+
     var artboard = obj.parent;
     var textLayers = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_1__["getText"])(artboard.layers);
     var sortedTextLayer = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_1__["sortTextDescendingOrder"])(textLayers);
-    var sObj = obj.sketchObject;
     var originalObj = document.getLayerWithID(sortedTextLayer[0].name);
 
     if (originalObj) {
-      originalObj.style = obj.style;
-      var sOriginalObj = originalObj.sketchObject;
-      sOriginalObj.setCornerRadiusFloat(sObj.cornerRadiusFloat());
+      if (originalObj.type === "Group") {
+        var orignalShape = getShapeFromGroup(originalObj);
+        updateOriginalObject(orignalShape, shape);
+      } else {
+        updateOriginalObject(originalObj, obj);
+      }
     }
   }
 });
+
+function getShapeFromGroup(obj) {
+  var layers = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_1__["getShapePaths"])(obj.layers);
+  obj = layers[0];
+  return obj;
+}
+
+function updateOriginalObject(originalObj, obj) {
+  var sObj = obj.sketchObject;
+  originalObj.style = obj.style;
+  var sOriginalObj = originalObj.sketchObject;
+  sOriginalObj.setCornerRadiusFloat(sObj.cornerRadiusFloat());
+}
 
 /***/ }),
 

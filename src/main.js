@@ -10,8 +10,6 @@ import {
 } from './styleUtil'
 import {mutateCornerRadius} from './shapeUtil'
 import {
-  getGroups,
-  getShapePaths,
   getText,
   hasTextElementByValue,
   sortTextDescendingOrder} from './layerUtil'

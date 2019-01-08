@@ -21,8 +21,12 @@
   "devDependencies": {
     "@skpm/builder": "^0.5.11"
   },
-  "author": "SimonTakman <simontakman@gmail.com>",
+  "author": "Carl Albertsson & Simon Takman",
   "dependencies": {
     "sketch-module-web-view": "^2.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SimonTakman/BillUI.git"
   }
 }
