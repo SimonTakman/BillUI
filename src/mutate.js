@@ -30,7 +30,7 @@ export function mutateWithParameters(selectedParameters){
           let symbolmaster = document.getSymbolMasterWithID(selectedLayers.layers[0].symbolId)
           if(symbolmaster){
             console.log(symbolmaster)
-            createMutations(symbolmaster.layers[0], selectedParameters, null)
+            createMutations(symbolmaster.layers[0], selectedParameters, selectedLayers.layers[0])
             //TODO: Update element on the symbolmaster
           }
         } else {
@@ -45,9 +45,9 @@ export function mutateWithParameters(selectedParameters){
 function createMutations(layer, selectedParameters, symbolLayer){
   let artboardProperties
   if(symbolLayer){
-    artboardProperties = createArtboardTemplate(symbolLayer)
+    artboardProperties = createArtboardTemplate(symbolLayer, layer.id)
   } else {
-    artboardProperties = createArtboardTemplate(layer)
+    artboardProperties = createArtboardTemplate(layer, layer.id)
   }
   
   let originalShapeInNewArtboard = duplicateOriginalLayerInNewArtboard(layer, artboardProperties.parentArtboard, artboardProperties.originalText)

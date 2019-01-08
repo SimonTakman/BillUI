@@ -131,7 +131,7 @@ function listenToMutationEvents(){
   })
 }
 
-export function createArtboardTemplate(obj){
+export function createArtboardTemplate(obj, id){
   let artboardFrameProperties = obj.parent.frame
   let parentArtboard = createNewArtboard(artboardFrameProperties, obj.frame, obj.name)
   let originalText = addDescrption(parentArtboard, 'Original', X_OFFSET, Y_OFFSET, 0.7, 14)
@@ -140,7 +140,7 @@ export function createArtboardTemplate(obj){
     let sortedTextLayer = sortTextDescendingOrder(textLayers)
     addDescrption(parentArtboard, sortedTextLayer[0].name, X_OFFSET, Y_OFFSET + 1 + originalText.frame.height, 0.2, 2)
   } else {
-    addDescrption(parentArtboard, obj.id, X_OFFSET, Y_OFFSET + 1 + originalText.frame.height, 0.2, 2)
+    addDescrption(parentArtboard, id, X_OFFSET, Y_OFFSET + 1 + originalText.frame.height, 0.2, 2)
   }
   let mutationText = addDescrption(parentArtboard, 'Mutation', X_OFFSET, obj.frame.height + (3 * Y_OFFSET) + originalText.frame.height, 0.7, 14)
   parentArtboard.frame.height = parentArtboard.frame.height + originalText.frame.height + mutationText.frame.height + (3 * Y_OFFSET)

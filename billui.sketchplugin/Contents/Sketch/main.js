@@ -2661,7 +2661,7 @@ function listenToMutationEvents() {
   });
 }
 
-function createArtboardTemplate(obj) {
+function createArtboardTemplate(obj, id) {
   var artboardFrameProperties = obj.parent.frame;
   var parentArtboard = createNewArtboard(artboardFrameProperties, obj.frame, obj.name);
   var originalText = addDescrption(parentArtboard, 'Original', _constants__WEBPACK_IMPORTED_MODULE_8__["X_OFFSET"], _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"], 0.7, 14);
@@ -2671,7 +2671,7 @@ function createArtboardTemplate(obj) {
     var sortedTextLayer = Object(_layerUtil__WEBPACK_IMPORTED_MODULE_7__["sortTextDescendingOrder"])(textLayers);
     addDescrption(parentArtboard, sortedTextLayer[0].name, _constants__WEBPACK_IMPORTED_MODULE_8__["X_OFFSET"], _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"] + 1 + originalText.frame.height, 0.2, 2);
   } else {
-    addDescrption(parentArtboard, obj.id, _constants__WEBPACK_IMPORTED_MODULE_8__["X_OFFSET"], _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"] + 1 + originalText.frame.height, 0.2, 2);
+    addDescrption(parentArtboard, id, _constants__WEBPACK_IMPORTED_MODULE_8__["X_OFFSET"], _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"] + 1 + originalText.frame.height, 0.2, 2);
   }
 
   var mutationText = addDescrption(parentArtboard, 'Mutation', _constants__WEBPACK_IMPORTED_MODULE_8__["X_OFFSET"], obj.frame.height + 3 * _constants__WEBPACK_IMPORTED_MODULE_8__["Y_OFFSET"] + originalText.frame.height, 0.7, 14);
@@ -2740,7 +2740,7 @@ function mutateWithParameters(selectedParameters) {
 
         if (symbolmaster) {
           console.log(symbolmaster);
-          createMutations(symbolmaster.layers[0], selectedParameters, null); //TODO: Update element on the symbolmaster
+          createMutations(symbolmaster.layers[0], selectedParameters, selectedLayers.layers[0]); //TODO: Update element on the symbolmaster
         }
       } else {
         sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("No layers found");
@@ -2755,9 +2755,9 @@ function createMutations(layer, selectedParameters, symbolLayer) {
   var artboardProperties;
 
   if (symbolLayer) {
-    artboardProperties = Object(_main__WEBPACK_IMPORTED_MODULE_1__["createArtboardTemplate"])(symbolLayer);
+    artboardProperties = Object(_main__WEBPACK_IMPORTED_MODULE_1__["createArtboardTemplate"])(symbolLayer, layer.id);
   } else {
-    artboardProperties = Object(_main__WEBPACK_IMPORTED_MODULE_1__["createArtboardTemplate"])(layer);
+    artboardProperties = Object(_main__WEBPACK_IMPORTED_MODULE_1__["createArtboardTemplate"])(layer, layer.id);
   }
 
   var originalShapeInNewArtboard = Object(_main__WEBPACK_IMPORTED_MODULE_1__["duplicateOriginalLayerInNewArtboard"])(layer, artboardProperties.parentArtboard, artboardProperties.originalText);
