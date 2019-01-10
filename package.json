@@ -6,7 +6,10 @@
   },
   "skpm": {
     "name": "BillUI",
+    "title": "BillUI",
     "manifest": "src/manifest.json",
+    "identifier":"BillUI",
+    "appcast": "https://api.sketchpacks.com/v1/plugins/BillUI/appcast",
     "main": "billui.sketchplugin",
     "assets": [
       "assets/**/*"
