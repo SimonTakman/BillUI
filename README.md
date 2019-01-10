@@ -4,7 +4,7 @@ _This plugin was created using `skpm`. For a detailed explanation on how things 
 
 ## Usage
 
-Install the dependencies
+Installl the dependencies
 
 ```bash
 npm install
