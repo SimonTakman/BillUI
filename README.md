@@ -31,3 +31,7 @@ Below is a graphical representation of how the genetic algorithm works in our do
 * Rectangle
 * Group w/ Rectangle & Text
 * Symbol of Rectangle or Group w/ Rectangle & Text
+
+## Contributors
+* [`Carl Albertsson`](https://github.com/sCarlman)
+* [`Simon Takman`](https://github.com/SimonTakman)
