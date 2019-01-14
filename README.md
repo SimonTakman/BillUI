@@ -1,11 +1,22 @@
 # ![Logo](readme-resources/logo-32.png) BillUI
 
+[![Download from Sketchpacks.com](https://badges.sketchpacks.com/plugins/BillUI/version.svg)](https://sketchpacks.com/SimonTakman/BillUI)
+[![View on Sketchpacks.com](https://badges.sketchpacks.com/plugins/BillUI/downloads/total.svg)](https://sketchpacks.com/SimonTakman/BillUI)
+
 Sketch plugin - Interactive artificial evolutionary tool in order to help you come up with design suggestions that are similar to your initial design.
 
 ## Installation
+### Manual Install
 1. Download [`billui.sketchplugin.zip`](https://github.com/SimonTakman/BillUI/releases/download/v1.0.0/billui.sketchplugin.zip)
 2. Extract the archive
 3. Install `billui.sketchplugin` for Sketch App
+
+### Install with Sketchpacks
+Click on the badge below:
+
+<a href="https://sketchpacks.com/SimonTakman/BillUI/install">
+  <img width="160" height="41" src="http://sketchpacks-com.s3.amazonaws.com/assets/badges/sketchpacks-badge-install.png" >
+</a>
 
 ## Usage
 Access the plugin from Sketch's Menu Bar:
