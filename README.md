@@ -1,93 +1,33 @@
 # ![Logo](readme-resources/logo-32.png) BillUI
 
-_This plugin was created using `skpm`. For a detailed explanation on how things work, checkout the [skpm Readme](https://github.com/skpm/skpm/blob/master/README.md)._
+Sketch plugin - Interactive artificial evolutionary tool in order to help you come up with design suggestions that are similar to your initial design.
+
+## Installation
+1. Download [`billui.sketchplugin.zip`](https://github.com/SimonTakman/BillUI/releases/download/v1.0.0/billui.sketchplugin.zip)
+2. Extract the archive
+3. Install `billui.sketchplugin` for Sketch App
 
 ## Usage
+Access the plugin from Sketch's Menu Bar:
 
-Installl the dependencies
+<img src="readme-resources/shortcuts.png">
 
-```bash
-npm install
-```
+Open the GUI in order to select what parameters you want to mutate.
 
-Once the installation is done, you can run some commands inside the project folder:
+<img src="readme-resources/fitness_selection_v2.png">
 
-```bash
-npm run build
-```
+Below is an example of usage of the plugin:
 
-To watch for changes:
+<img src="readme-resources/billui_v2.png">
 
-```bash
-npm run watch
-```
+## Algorithm
+The algorithm is a _Genetic Algorithm_ and follows the recommendation from [`Mathworks`](https://mathworks.com/help/gads/how-the-genetic-algorithm-works.html). 
 
-Additionally, if you wish to run the plugin every time it is built:
+Below is a graphical representation of how the genetic algorithm works in our domain:
 
-```bash
-npm run start
-```
+<img src="readme-resources/mutationflow.jpg">
 
-## Custom Configuration
-
-### Babel
-
-To customize Babel, you have two options:
-
-* You may create a [`.babelrc`](https://babeljs.io/docs/usage/babelrc) file in your project's root directory. Any settings you define here will overwrite matching config-keys within skpm preset. For example, if you pass a "presets" object, it will replace & reset all Babel presets that skpm defaults to.
-
-* If you'd like to modify or add to the existing Babel config, you must use a `webpack.skpm.config.js` file. Visit the [Webpack](#webpack) section for more info.
-
-### Webpack
-
-To customize webpack create `webpack.skpm.config.js` file which exports function that will change webpack's config.
-
-```js
-/**
- * Function that mutates original webpack config.
- * Supports asynchronous changes when promise is returned.
- *
- * @param {object} config - original webpack config.
- * @param {boolean} isPluginCommand - whether the config is for a plugin command or a resource
- **/
-module.exports = function(config, isPluginCommand) {
-  /** you can change config here **/
-}
-```
-
-## Debugging
-
-To view the output of your `console.log`, you have a few different options:
-
-* Use the [`sketch-dev-tools`](https://github.com/skpm/sketch-dev-tools)
-* Open `Console.app` and look for the sketch logs
-* Look at the `~/Library/Logs/com.bohemiancoding.sketch3/Plugin Output.log` file
-
-Skpm provides a convenient way to do the latter:
-
-```bash
-skpm log
-```
-
-The `-f` option causes `skpm log` to not stop when the end of logs is reached, but rather to wait for additional data to be appended to the input
-
-## Publishing your plugin
-
-```bash
-skpm publish <bump>
-```
-
-(where `bump` can be `patch`, `minor` or `major`)
-
-`skpm publish` will create a new release on your GitHub repository and create an appcast file in order for Sketch users to be notified of the update.
-
-You will need to specify a `repository` in the `package.json`:
-
-```diff
-...
-+ "repository" : {
-+   "type": "git",
-+   "url": "git+https://github.com/ORG/NAME.git"
-+  }
-...
-```
+## Supported Shapes
+* Rectangle
+* Group w/ Rectangle & Text
+* Symbol of Rectangle or Group w/ Rectangle & Text
